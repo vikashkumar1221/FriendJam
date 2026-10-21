@@ -1,0 +1,41 @@
+{
+  "name": "musiccollab",
+  "version": "1.0.0",
+  "description": "MusicCollab — GitHub for Musicians with Human-Made Neo-Brutalist UI",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "server": "node server/index.js",
+    "client": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "dev": "concurrently -k -p \"[{name}]\" -n \"SERVER,CLIENT\" -c \"yellow,cyan\" \"npm run server\" \"npm run client\"",
+    "test": "node --test tests/criticalOperations.test.js"
+  },
+  "keywords": [
+    "music",
+    "collaboration",
+    "git",
+    "version-control",
+    "multitrack",
+    "audio"
+  ],
+  "author": "Vikash Sharma",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.8",
+    "express": "^5.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongodb-memory-server": "^11.3.0",
+    "mongoose": "^9.11.2",
+    "morgan": "^1.12.1",
+    "multer": "^2.4.0",
+    "socket.io": "^4.8.4",
+    "uuid": "^14.0.3",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  }
+}

@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #f5f3ec;
+    color: #111111;
+    font-family: 'Space Grotesk', -apple-system, sans-serif;
+  }
+}
+
+/* Custom scrollbar in brutalist workshop style */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #ede8dc;
+  border-left: 2px solid #111111;
+}
+::-webkit-scrollbar-thumb {
+  background: #111111;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #333333;
+}
+
+/* Utility classes for Neo-Brutalist components */
+.brutal-card {
+  background-color: #faf9f5;
+  border: 2px solid #111111;
+  box-shadow: 4px 4px 0px #111111;
+}
+
+.brutal-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  border: 2px solid #111111;
+  box-shadow: 3px 3px 0px #111111;
+  transition: all 0.08s ease;
+  user-select: none;
+}
+.brutal-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px #111111;
+}
+.brutal-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px #111111;
+}
+
+.brutal-btn-acid {
+  background-color: #d7ff3b;
+  color: #111111;
+}
+.brutal-btn-acid:hover {
+  background-color: #e2f952;
+}
+
+.brutal-btn-dark {
+  background-color: #111111;
+  color: #faf9f5;
+}
+.brutal-btn-dark:hover {
+  background-color: #222222;
+}
+
+.brutal-input {
+  border: 2px solid #111111;
+  background-color: #ffffff;
+  padding: 0.5rem 0.75rem;
+  font-family: 'JetBrains Mono', monospace;
+  outline: none;
+  transition: all 0.1s ease;
+}
+.brutal-input:focus {
+  background-color: #faf9f5;
+  box-shadow: 3px 3px 0px #d7ff3b;
+}
+
+.technical-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: -0.02em;
+  padding: 2px 6px;
+  border: 1.5px solid #111111;
+  display: inline-flex;
+  align-items: center;
+}
