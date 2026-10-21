@@ -11,6 +11,12 @@ export const api = {
     return res.json();
   },
 
+  async getGlobalActivities() {
+    const res = await fetch('/api/repos/global/activities', { headers: getAuthHeaders() });
+    if (!res.ok) return { activities: [] };
+    return res.json();
+  },
+
   async createRepo(data) {
     const res = await fetch('/api/repos', {
       method: 'POST',

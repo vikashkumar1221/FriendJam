@@ -176,6 +176,26 @@ async function seedInitialData() {
     bio: 'Ambient textures and crisp solos.'
   }).save();
 
+  const neha = await new User({
+    username: 'neha',
+    email: 'neha@musiccollab.io',
+    passwordHash: pwHash,
+    displayName: 'Neha Sharma',
+    primaryRole: 'Vocalist & Producer',
+    instruments: ['Vocals', 'Synths'],
+    bio: 'Lo-fi beats, ambient dream pop, warm vocals.'
+  }).save();
+
+  const rohan = await new User({
+    username: 'rohan',
+    email: 'rohan@musiccollab.io',
+    passwordHash: pwHash,
+    displayName: 'Rohan Verma',
+    primaryRole: 'Bass & Arrangement',
+    instruments: ['Bass', 'Keys'],
+    bio: 'Groove-first basslines and arrangements.'
+  }).save();
+
   // Create the flagship repository: "Adhoori Kahani"
   const repo = new SongRepository({
     name: 'Adhoori Kahani',
@@ -563,6 +583,87 @@ Adhoori kahani...`,
   });
   await pr1.save();
 
+  // Create Song 2: "Raat Ke Safar" (Lo-fi • Ambient)
+  const repo2 = new SongRepository({
+    name: 'Raat Ke Safar',
+    slug: 'raat-ke-safar',
+    description: 'Late-night lo-fi chillhop track with rain textures, Rhodes chords and muted trumpet.',
+    genre: 'Lo-fi / Ambient',
+    bpm: 78,
+    keySignature: 'D Minor',
+    timeSignature: '4/4',
+    status: 'Mixing',
+    visibility: 'public',
+    owner: neha._id,
+    defaultBranch: 'main',
+    protectedBranches: ['main'],
+    updatedAt: new Date(Date.now() - 3600000 * 24 * 5)
+  });
+  await repo2.save();
+  await new RepositoryMember({ repository: repo2._id, user: vikash._id, role: 'maintainer', instrumentRole: 'Mix & Master' }).save();
+  await new RepositoryMember({ repository: repo2._id, user: arjun._id, role: 'contributor', instrumentRole: 'Lo-fi Drum Beats' }).save();
+
+  // Create Song 3: "Laal Dhun" (Alternative • Indie)
+  const repo3 = new SongRepository({
+    name: 'Laal Dhun',
+    slug: 'laal-dhun',
+    description: 'Punchy alternative indie rock with fuzz bass, driving rhythm and soaring vocals.',
+    genre: 'Alternative / Indie',
+    bpm: 128,
+    keySignature: 'A Minor',
+    timeSignature: '4/4',
+    status: 'Tracking',
+    visibility: 'public',
+    owner: vikash._id,
+    defaultBranch: 'main',
+    protectedBranches: ['main'],
+    updatedAt: new Date(Date.now() - 3600000 * 24 * 7)
+  });
+  await repo3.save();
+  await new RepositoryMember({ repository: repo3._id, user: sid._id, role: 'contributor', instrumentRole: 'Fuzz Guitar' }).save();
+  await new RepositoryMember({ repository: repo3._id, user: rohan._id, role: 'contributor', instrumentRole: 'Bass' }).save();
+
+  // Create Song 4: "Sheher Se Door" (Acoustic • Chill)
+  const repo4 = new SongRepository({
+    name: 'Sheher Se Door',
+    slug: 'sheher-se-door',
+    description: 'Gentle fingerstyle acoustic ballad capturing sunset over the hills.',
+    genre: 'Acoustic / Chill',
+    bpm: 88,
+    keySignature: 'G Major',
+    timeSignature: '3/4',
+    status: 'Arrangement',
+    visibility: 'public',
+    owner: arjun._id,
+    defaultBranch: 'main',
+    protectedBranches: ['main'],
+    updatedAt: new Date(Date.now() - 3600000 * 24 * 8)
+  });
+  await repo4.save();
+  await new RepositoryMember({ repository: repo4._id, user: vikash._id, role: 'contributor', instrumentRole: 'Acoustic Guitar' }).save();
+  await new RepositoryMember({ repository: repo4._id, user: neha._id, role: 'contributor', instrumentRole: 'Backing Vocals' }).save();
+
+  // Create Song 5: "Nayi Subah" (Pop • Hindi)
+  const repo5 = new SongRepository({
+    name: 'Nayi Subah',
+    slug: 'nayi-subah',
+    description: 'Upbeat Hindi indie-pop with uplifting synth hooks, acoustic strumming, and crisp percussion.',
+    genre: 'Pop / Hindi',
+    bpm: 114,
+    keySignature: 'D Major',
+    timeSignature: '4/4',
+    status: 'Tracking',
+    visibility: 'public',
+    owner: vikash._id,
+    defaultBranch: 'main',
+    protectedBranches: ['main'],
+    updatedAt: new Date(Date.now() - 3600000 * 24 * 14)
+  });
+  await repo5.save();
+  await new RepositoryMember({ repository: repo5._id, user: maya._id, role: 'contributor', instrumentRole: 'Lead Vocals' }).save();
+  await new RepositoryMember({ repository: repo5._id, user: sid._id, role: 'contributor', instrumentRole: 'Electric Guitar' }).save();
+  await new RepositoryMember({ repository: repo5._id, user: rohan._id, role: 'contributor', instrumentRole: 'Bass' }).save();
+
   // Add realistic comments:
   // 1. Timestamp comment on audio waveform
   await new Comment({
@@ -634,11 +735,54 @@ Adhoori kahani...`,
     details: 'Opened Pull Request #1: "Add higher octave vocal harmonies to Chorus section".'
   }).save();
 
+  // Activities matching landing dashboard
+  await new AuditLog({
+    repository: repo2._id,
+    user: neha._id,
+    action: 'TAKE_UPLOADED',
+    details: 'added a new vocal take on Raat Ke Safar',
+    createdAt: new Date(Date.now() - 3600000 * 2)
+  }).save();
+
+  await new AuditLog({
+    repository: repo._id,
+    user: arjun._id,
+    action: 'COMMENT_POSTED',
+    details: 'commented on Ahoori Kahani: "This chorus sounds amazing! 🔥"',
+    createdAt: new Date(Date.now() - 3600000 * 4)
+  }).save();
+
+  await new AuditLog({
+    repository: repo3._id,
+    user: vikash._id,
+    action: 'COMMIT_PUSHED',
+    details: 'pushed changes to Laal Dhun',
+    createdAt: new Date(Date.now() - 3600000 * 6)
+  }).save();
+
+  await new AuditLog({
+    repository: repo3._id,
+    user: rohan._id,
+    action: 'MEMBER_JOINED',
+    details: 'joined the collaboration on Laal Dhun',
+    createdAt: new Date(Date.now() - 3600000 * 24)
+  }).save();
+
+  await new AuditLog({
+    repository: repo2._id,
+    user: neha._id,
+    action: 'PR_MERGED',
+    details: 'merged a pull request on Raat Ke Safar',
+    createdAt: new Date(Date.now() - 3600000 * 26)
+  }).save();
+
   console.log('[Seed] Demo data seeding completed successfully! Demo accounts available:');
   console.log('       vikash / Password123!');
+  console.log('       neha / Password123!');
   console.log('       maya-vocals / Password123!');
   console.log('       sid-guitar / Password123!');
   console.log('       arjun-drums / Password123!');
+  console.log('       rohan / Password123!');
 }
 
 module.exports = { seedInitialData };

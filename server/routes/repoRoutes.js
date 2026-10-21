@@ -55,6 +55,21 @@ router.get('/', authenticateToken, async (req, res) => {
   }
 });
 
+// Global recent activity across projects
+router.get('/global/activities', optionalAuth, async (req, res) => {
+  try {
+    const activities = await AuditLog.find()
+      .populate('user', 'username displayName')
+      .populate('repository', 'name slug')
+      .sort({ createdAt: -1 })
+      .limit(20);
+
+    res.json({ activities });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch activities.' });
+  }
+});
+
 // Create a new song repository
 router.post('/', authenticateToken, async (req, res) => {
   try {
