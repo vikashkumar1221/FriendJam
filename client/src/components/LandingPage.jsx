@@ -1,22 +1,6 @@
-import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { 
-  GitBranch, 
-  GitCommit, 
-  Music, 
-  Layers, 
-  FileText, 
-  Sliders, 
-  ArrowRight, 
-  ShieldCheck, 
-  Undo2, 
-  GitPullRequest,
-  Play,
-  Volume2,
-  Sparkles
-} from 'lucide-react';
+export { AuthPage as LandingPage } from './AuthPage';
+export { AuthPage } from './AuthPage';
 
-export const LandingPage = ({ onExploreDemo }) => {
   const { login, register, switchDemoAccount } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'

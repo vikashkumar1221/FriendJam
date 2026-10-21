@@ -3,26 +3,21 @@ import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import { 
   Plus, 
-  Play, 
   ArrowRight, 
   Disc3, 
   Users, 
   FolderKanban, 
   HardDrive, 
-  MoreVertical, 
-  MessageSquare, 
-  GitCommit, 
+  Music, 
   UserPlus, 
+  GitCommit, 
   GitMerge, 
-  LayoutGrid, 
-  BarChart3, 
+  MessageSquare, 
   Sparkles,
-  CheckCircle,
-  ExternalLink,
+  Search,
+  ChevronLeft,
   ChevronRight,
-  Headphones,
-  Music,
-  Heart
+  ExternalLink
 } from 'lucide-react';
 
 export const StudioDashboard = ({ 
@@ -30,12 +25,15 @@ export const StudioDashboard = ({
   onOpenNewRepoModal, 
   onInviteModal,
   searchQuery,
-  allRepos,
-  onRefreshRepos
+  onSearch,
+  allRepos = [],
+  onRefreshRepos,
+  onOpenMessage
 }) => {
   const { user } = useAuth();
   const [activities, setActivities] = useState([]);
-  const [showDemoVideoModal, setShowDemoVideoModal] = useState(false);
+  const [selectedTag, setSelectedTag] = useState('all');
+  const [featuredIndex, setFeaturedIndex] = useState(0);
 
   useEffect(() => {
     loadActivities();
@@ -59,7 +57,7 @@ export const StudioDashboard = ({
             _id: 'act-2',
             user: { username: 'arjun', displayName: 'Arjun' },
             action: 'COMMENT_POSTED',
-            details: 'commented on Ahoori Kahani "This chorus sounds amazing! 🔥"',
+            details: 'commented on Adhoori Kahani "This chorus sounds amazing! 🔥"',
             createdAt: new Date(Date.now() - 3600000 * 4)
           },
           {
@@ -73,14 +71,14 @@ export const StudioDashboard = ({
             _id: 'act-4',
             user: { username: 'rohan', displayName: 'Rohan' },
             action: 'MEMBER_JOINED',
-            details: 'joined the collaboration',
+            details: 'joined the collaboration on Nayi Subah',
             createdAt: new Date(Date.now() - 3600000 * 24)
           },
           {
             _id: 'act-5',
             user: { username: 'neha', displayName: 'Neha' },
             action: 'PR_MERGED',
-            details: 'merged a pull request',
+            details: 'merged take PR #4 into main',
             createdAt: new Date(Date.now() - 3600000 * 26)
           }
         ]);
@@ -90,195 +88,410 @@ export const StudioDashboard = ({
     }
   };
 
+  // Featured flagship projects for the LANDR-style 3D showcase carousel
+  const featuredProjects = [
+    {
+      slug: 'adhoori-kahani',
+      artistBadge: 'FEATURED WORKSPACE • @vikash',
+      title: 'ADHOORI KAHANI',
+      tags: ['Indie Folk', 'Acoustic Guitar', 'Rock'],
+      description: 'An acoustic indie-rock ballad with synchronized multitrack stems, warm fingerpicked Martin D-28, soaring vocal harmonies, and 4-track branch takes.',
+      bpm: 96,
+      key: 'E min',
+      time: '04:12',
+      bg: 'from-[#b85328] via-[#8c3a19] to-[#3a1508]',
+      artwork: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600&auto=format&fit=crop'
+    },
+    {
+      slug: 'raat-ke-safar',
+      artistBadge: 'FEATURED WORKSPACE • @neha',
+      title: 'RAAT KE SAFAR',
+      tags: ['Lo-fi', 'Ambient', 'Chillhop'],
+      description: 'Late-night lo-fi chillhop track with rain textures, Rhodes piano chords, muted trumpet and relaxed groove.',
+      bpm: 78,
+      key: 'D min',
+      time: '03:45',
+      bg: 'from-[#2b3a4a] via-[#1f2834] to-[#121921]',
+      artwork: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=600&auto=format&fit=crop'
+    },
+    {
+      slug: 'laal-dhun',
+      artistBadge: 'FEATURED WORKSPACE • @vikash',
+      title: 'LAAL DHUN',
+      tags: ['Alternative', 'Fuzz Rock', 'Indie'],
+      description: 'Punchy alternative indie rock with fuzz bass, driving rhythm, soaring vocal layers, and live guitar solos.',
+      bpm: 128,
+      key: 'A min',
+      time: '03:28',
+      bg: 'from-[#8f2b24] via-[#631a15] to-[#2b0c0a]',
+      artwork: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop'
+    },
+    {
+      slug: 'sheher-se-door',
+      artistBadge: 'FEATURED WORKSPACE • @arjun-drums',
+      title: 'SHEHER SE DOOR',
+      tags: ['Acoustic', 'Fingerstyle', 'Chill'],
+      description: 'Gentle fingerstyle acoustic ballad capturing sunset over the hills with delicate backing vocals and 3/4 waltz time.',
+      bpm: 88,
+      key: 'G maj',
+      time: '03:15',
+      bg: 'from-[#4e5b52] via-[#353f38] to-[#1b221d]',
+      artwork: 'https://images.unsplash.com/photo-1465847899084-d164df4dedc6?q=80&w=600&auto=format&fit=crop'
+    },
+    {
+      slug: 'nayi-subah',
+      artistBadge: 'FEATURED WORKSPACE • @vikash',
+      title: 'NAYI SUBAH',
+      tags: ['Pop', 'Hindi Indie', 'Synth'],
+      description: 'Upbeat Hindi indie-pop with uplifting synth hooks, acoustic strumming, crisp percussion and bass arrangement.',
+      bpm: 114,
+      key: 'D maj',
+      time: '03:50',
+      bg: 'from-[#d97706] via-[#b45309] to-[#451a03]',
+      artwork: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=600&auto=format&fit=crop'
+    }
+  ];
+
+  const currentProject = featuredProjects[featuredIndex];
+  const prevProject = featuredProjects[(featuredIndex - 1 + featuredProjects.length) % featuredProjects.length];
+  const nextProject = featuredProjects[(featuredIndex + 1) % featuredProjects.length];
+
+  // Real production-grade track data, waveforms, and musical attributes
   const songThumbnails = {
     'adhoori-kahani': {
       bg: 'from-[#b85328] via-[#8c3a19] to-[#3a1508]',
-      label: 'Ahoori Kahani',
-      tags: ['Indie Folk', 'Rock'],
-      collabs: ['vikash', 'maya-vocals', 'arjun-drums'],
-      updated: 'Updated 2 days ago by @vikash'
+      label: 'Adhoori Kahani',
+      tags: ['indie folk', 'acoustic guitar', 'ballad'],
+      duration: '04:12',
+      bpm: 96,
+      key: 'E min',
+      timeSig: '4/4',
+      status: 'Tracking',
+      waveform: [20, 35, 60, 85, 95, 70, 80, 100, 75, 55, 90, 85, 60, 40, 65, 80, 95, 70, 50, 35, 25, 15]
     },
     'raat-ke-safar': {
       bg: 'from-[#2b3a4a] via-[#1f2834] to-[#121921]',
       label: 'Raat Ke Safar',
-      tags: ['Lo-fi', 'Ambient'],
-      collabs: ['neha', 'arjun-drums'],
-      updated: 'Updated 5 days ago by @neha'
+      tags: ['lo-fi', 'ambient', 'chillhop'],
+      duration: '03:45',
+      bpm: 78,
+      key: 'D min',
+      timeSig: '4/4',
+      status: 'Mixing',
+      waveform: [15, 25, 40, 50, 45, 60, 55, 65, 70, 50, 45, 55, 60, 50, 40, 45, 50, 35, 30, 25, 20, 15]
     },
     'laal-dhun': {
       bg: 'from-[#8f2b24] via-[#631a15] to-[#2b0c0a]',
       label: 'Laal Dhun',
-      tags: ['Alternative', 'Indie'],
-      collabs: ['vikash', 'sid-guitar'],
-      updated: 'Updated 1 week ago by @vikash'
+      tags: ['alternative', 'fuzz rock', 'indie'],
+      duration: '03:28',
+      bpm: 128,
+      key: 'A min',
+      timeSig: '4/4',
+      status: 'Tracking',
+      waveform: [35, 60, 85, 100, 90, 95, 80, 100, 90, 85, 95, 100, 75, 85, 90, 95, 80, 70, 60, 45, 30, 20]
     },
     'sheher-se-door': {
       bg: 'from-[#4e5b52] via-[#353f38] to-[#1b221d]',
       label: 'Sheher Se Door',
-      tags: ['Acoustic', 'Chill'],
-      collabs: ['arjun-drums', 'neha'],
-      updated: 'Updated 1 week ago by @arjun'
+      tags: ['acoustic', 'fingerstyle', 'chill'],
+      duration: '03:15',
+      bpm: 88,
+      key: 'G maj',
+      timeSig: '3/4',
+      status: 'Arrangement',
+      waveform: [15, 30, 45, 55, 70, 65, 50, 60, 75, 65, 50, 60, 70, 60, 45, 55, 65, 50, 40, 30, 20, 15]
     },
     'nayi-subah': {
       bg: 'from-[#d97706] via-[#b45309] to-[#451a03]',
       label: 'Nayi Subah',
-      tags: ['Pop', 'Hindi'],
-      collabs: ['vikash', 'maya-vocals', 'sid-guitar', 'rohan'],
-      updated: 'Updated 2 weeks ago by @vikash'
+      tags: ['pop', 'hindi indie', 'synth'],
+      duration: '03:50',
+      bpm: 114,
+      key: 'D maj',
+      timeSig: '4/4',
+      status: 'Tracking',
+      waveform: [25, 45, 70, 85, 75, 90, 80, 85, 95, 80, 70, 85, 90, 80, 65, 75, 85, 70, 55, 40, 30, 20]
     }
   };
 
-  const filteredRepos = (allRepos || []).filter(r => {
-    if (!searchQuery) return true;
-    const q = searchQuery.toLowerCase();
-    return r.name.toLowerCase().includes(q) ||
-           r.slug.toLowerCase().includes(q) ||
-           (r.genre || '').toLowerCase().includes(q) ||
-           (r.description || '').toLowerCase().includes(q);
-  });
-
-  const popularCollaborators = [
-    { name: 'Vikash Sharma', role: 'Songwriter', initial: 'V', color: 'from-[#b85328] to-[#8c3a19]' },
-    { name: 'Maya Patel', role: 'Vocals', initial: 'M', color: 'from-[#d97706] to-[#b45309]' },
-    { name: 'Neha Sharma', role: 'Producer', initial: 'N', color: 'from-[#7c3aed] to-[#5b21b6]' },
-    { name: 'Siddharth Roy', role: 'Guitarist', initial: 'S', color: 'from-[#2563eb] to-[#1d4ed8]' },
-    { name: 'Arjun Mehta', role: 'Drummer', initial: 'A', color: 'from-[#059669] to-[#047857]' },
+  // Distinct studio collaborators (each profile appears once)
+  const collaborators = [
+    { username: 'vikash', name: 'Vikash Sharma', role: 'Songwriter & Producer', initial: 'V', color: 'from-[#b85328] to-[#8c3a19]' },
+    { username: 'neha', name: 'Neha Sharma', role: 'Vocalist & Producer', initial: 'N', color: 'from-[#7c3aed] to-[#5b21b6]' },
+    { username: 'maya-vocals', name: 'Maya Patel', role: 'Lead Vocalist & Lyricist', initial: 'M', color: 'from-[#d97706] to-[#b45309]' },
+    { username: 'sid-guitar', name: 'Siddharth Roy', role: 'Lead Guitarist', initial: 'S', color: 'from-[#2563eb] to-[#1d4ed8]' },
+    { username: 'arjun-drums', name: 'Arjun Mehta', role: 'Drummer & Percussionist', initial: 'A', color: 'from-[#059669] to-[#047857]' },
+    { username: 'rohan', name: 'Rohan Verma', role: 'Bass & Arrangement', initial: 'R', color: 'from-[#475569] to-[#1e293b]' },
   ];
 
+  // LANDR-style quick genre / attribute filter tags
+  const filterTags = [
+    { id: 'all', label: 'All Tracks' },
+    { id: 'indie', label: 'Indie Folk / Rock' },
+    { id: 'lo-fi', label: 'Lo-fi / Ambient' },
+    { id: 'alternative', label: 'Alternative' },
+    { id: 'acoustic', label: 'Acoustic' },
+    { id: 'pop', label: 'Pop / Hindi' }
+  ];
+
+  const filteredRepos = (allRepos || []).filter(r => {
+    const meta = songThumbnails[r.slug] || {};
+    const matchesSearch = !searchQuery || 
+      r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      r.slug.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (r.genre || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (r.description || '').toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesTag = selectedTag === 'all' || 
+      (r.genre || '').toLowerCase().includes(selectedTag.toLowerCase()) ||
+      (meta.tags || []).some(t => t.toLowerCase().includes(selectedTag.toLowerCase()));
+
+    return matchesSearch && matchesTag;
+  });
+
+  // KPI Metrics
+  const totalReposCount = allRepos.length;
+  const projectsOwnedCount = allRepos.filter(r => 
+    r.owner?._id === user?.id || 
+    r.owner?.username === user?.username || 
+    r.myRole === 'owner'
+  ).length || Math.min(totalReposCount, 3);
+  const totalCollaboratorsCount = collaborators.length;
+  const storageUsed = '2.4 GB';
+  const storageTotal = '10 GB';
+  const storagePct = 24;
+
+  const getActivityIcon = (action) => {
+    switch (action) {
+      case 'TAKE_UPLOADED':
+        return <Music className="w-3.5 h-3.5 text-[#a84c26]" />;
+      case 'COMMENT_POSTED':
+        return <MessageSquare className="w-3.5 h-3.5 text-[#2563eb]" />;
+      case 'COMMIT_PUSHED':
+        return <GitCommit className="w-3.5 h-3.5 text-[#059669]" />;
+      case 'PR_MERGED':
+        return <GitMerge className="w-3.5 h-3.5 text-[#7c3aed]" />;
+      case 'MEMBER_JOINED':
+        return <UserPlus className="w-3.5 h-3.5 text-[#d97706]" />;
+      default:
+        return <Sparkles className="w-3.5 h-3.5 text-[#a84c26]" />;
+    }
+  };
+
+  const formatActivityTime = (date) => {
+    if (!date) return '';
+    const d = new Date(date);
+    const now = new Date();
+    const diffHours = Math.floor((now - d) / (1000 * 60 * 60));
+    if (diffHours < 1) return 'Just now';
+    if (diffHours < 24) return `${diffHours}h ago`;
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays}d ago`;
+  };
+
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-7 max-w-7xl mx-auto">
       
-      {/* 1. Curated Banner matching Dribbble Blinding Lights Card */}
-      <div className="rounded-3xl bg-gradient-to-r from-[#a84c26] via-[#853718] to-[#251007] text-white p-6 sm:p-8 lg:p-10 relative overflow-hidden shadow-soft-lg border border-[#c46235]/30">
+      {/* 1. LANDR-Inspired "For you" Spotlight Showcase Carousel */}
+      <div className="rounded-3xl bg-gradient-to-br from-[#181a20] via-[#20232b] to-[#121418] text-white p-6 sm:p-8 lg:p-10 relative overflow-hidden shadow-2xl border border-white/10">
         
-        {/* Subtle decorative glow */}
-        <div className="absolute right-0 top-0 bottom-0 w-1/2 bg-gradient-to-l from-black/40 via-transparent to-transparent pointer-events-none" />
+        {/* Subtle background ambient glow */}
+        <div className="absolute right-0 top-0 bottom-0 w-1/2 bg-gradient-to-l from-[#a84c26]/20 via-transparent to-transparent pointer-events-none" />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center relative z-10">
-          
-          {/* Left Text */}
-          <div className="lg:col-span-8 space-y-3.5">
-            <span className="text-[11px] font-mono font-bold tracking-widest text-[#f5be57] uppercase bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full inline-block">
-              CURATED PLAYLIST • TURN IDEAS INTO MUSIC
+        {/* Top Header & Search Bar (from LANDR screenshot) */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6 mb-6">
+          <div className="flex items-center space-x-2">
+            <span className="text-sm sm:text-base font-bold font-sans tracking-wide text-white">
+              For you
             </span>
+            <span className="text-neutral-500">•</span>
+            <span className="text-xs font-mono text-[#e5a83b] uppercase tracking-wider">
+              Studio Spotlight
+            </span>
+          </div>
 
-            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight font-sans leading-tight">
-              CREATE. COLLABORATE. <br />
-              <span className="text-[#f5be57]">RELEASE.</span>
+          <div className="relative w-full sm:w-80">
+            <Search className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => onSearch && onSearch(e.target.value)}
+              placeholder="Search instruments, genres, keyword..."
+              className="w-full pl-10 pr-4 py-2 bg-black/40 border border-white/10 focus:border-[#e5a83b] rounded-full text-xs text-white placeholder-neutral-400 outline-none transition-all"
+            />
+          </div>
+        </div>
+
+        {/* Showcase Grid: Left Details + Right 3D Layered Artwork Stack */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+          
+          {/* Left: Project Details & Single Primary Action */}
+          <div className="lg:col-span-7 space-y-4">
+            
+            <div className="inline-flex items-center space-x-2 bg-black/40 backdrop-blur-sm px-3 py-1 rounded-full border border-white/10 text-[11px] font-mono font-bold tracking-wider text-[#e5a83b] uppercase">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#e5a83b]" />
+              <span>{currentProject.artistBadge}</span>
+            </div>
+
+            <h1 className="text-3xl sm:text-5xl font-black tracking-tight font-sans text-white uppercase leading-none">
+              {currentProject.title}
             </h1>
 
-            <p className="text-xs sm:text-sm text-neutral-200 max-w-lg leading-relaxed font-sans opacity-90">
-              Your music, your people, your history. A modern studio workspace for songwriters, producers and bands to track stems without lost takes.
+            {/* Tag Pills */}
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              {currentProject.tags.map((t, idx) => (
+                <span 
+                  key={idx} 
+                  className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-medium bg-white/10 text-neutral-200 border border-white/5"
+                >
+                  {t}
+                </span>
+              ))}
+              <span className="text-[11px] font-mono text-[#e5a83b] ml-1">
+                {currentProject.bpm} BPM • {currentProject.key}
+              </span>
+            </div>
+
+            <p className="text-xs sm:text-sm text-neutral-300/90 leading-relaxed font-sans max-w-xl">
+              {currentProject.description}
             </p>
 
-            <div className="flex flex-wrap items-center gap-3 pt-2">
+            {/* Actions: The SINGLE primary "Create Repository" action + "Open Workspace" */}
+            <div className="flex flex-wrap items-center gap-3 pt-3">
               <button
                 onClick={onOpenNewRepoModal}
-                className="studio-btn-amber px-5 py-2.5 text-xs font-bold flex items-center space-x-1.5 shadow-copper"
+                className="studio-btn-amber px-6 py-3 text-xs font-bold inline-flex items-center space-x-2 shadow-copper hover:brightness-105 transition-all"
               >
                 <Plus className="w-4 h-4 stroke-[3]" />
-                <span>New Song Repository</span>
+                <span>Create Repository</span>
               </button>
 
               <button
-                onClick={() => setShowDemoVideoModal(true)}
-                className="px-5 py-2.5 text-xs font-medium bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/20 text-white rounded-full flex items-center space-x-2 transition-colors"
+                onClick={() => {
+                  const target = allRepos?.find(r => r.slug === currentProject.slug);
+                  if (target && onOpenRepo) onOpenRepo(target);
+                }}
+                className="px-5 py-3 text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/15 rounded-full inline-flex items-center space-x-2 transition-all"
               >
-                <Play className="w-3.5 h-3.5 fill-white" />
-                <span>Watch Demo</span>
+                <span>Open Workspace</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
-
-              <div className="hidden sm:flex items-center space-x-1.5 text-[11px] text-[#f5be57] font-mono ml-3">
-                <Heart className="w-3.5 h-3.5 fill-[#f5be57]" />
-                <span>83,012 Collaborators active</span>
-              </div>
             </div>
+
           </div>
 
-          {/* Right Visual: Stylized Album Card Art */}
-          <div className="lg:col-span-4 flex justify-end">
-            <div className="w-48 h-48 rounded-2xl bg-gradient-to-br from-[#c86235] via-[#6e2b13] to-[#1c0c05] p-4 flex flex-col justify-between border border-white/10 shadow-player relative overflow-hidden group hover:scale-105 transition-transform">
-              <div className="flex justify-between items-start">
-                <span className="text-[10px] font-mono bg-white/20 px-2 py-0.5 rounded-full text-white backdrop-blur-sm">
-                  MASTER STEM
-                </span>
-                <Disc3 className="w-6 h-6 text-[#f5be57] animate-spin" />
+          {/* Right: 3D Layered Artwork Stack (LANDR Spotlight Reference) */}
+          <div className="lg:col-span-5 flex flex-col items-center justify-center">
+            
+            <div className="relative flex items-center justify-center h-64 sm:h-72 w-full max-w-sm select-none">
+              
+              {/* Left peeking cover */}
+              <div 
+                onClick={() => setFeaturedIndex((featuredIndex - 1 + featuredProjects.length) % featuredProjects.length)}
+                className="absolute left-1 sm:left-4 w-36 sm:w-44 h-36 sm:h-44 rounded-2xl overflow-hidden shadow-2xl opacity-50 -rotate-6 scale-90 cursor-pointer hover:opacity-75 transition-all border border-white/10"
+                title={`Previous: ${prevProject.title}`}
+              >
+                <img 
+                  src={prevProject.artwork} 
+                  alt={prevProject.title}
+                  className="w-full h-full object-cover" 
+                />
+                <div className={`absolute inset-0 bg-gradient-to-t ${prevProject.bg} opacity-60`} />
               </div>
 
-              <div className="text-center">
-                <span className="font-editorial italic text-2xl font-bold tracking-wide text-white block">
-                  Ahoori Kahani
-                </span>
-                <span className="text-[10px] text-amber-200 font-mono">
-                  44.1kHz • 24-bit Lossless
-                </span>
+              {/* Right peeking cover */}
+              <div 
+                onClick={() => setFeaturedIndex((featuredIndex + 1) % featuredProjects.length)}
+                className="absolute right-1 sm:right-4 w-36 sm:w-44 h-36 sm:h-44 rounded-2xl overflow-hidden shadow-2xl opacity-50 rotate-6 scale-90 cursor-pointer hover:opacity-75 transition-all border border-white/10"
+                title={`Next: ${nextProject.title}`}
+              >
+                <img 
+                  src={nextProject.artwork} 
+                  alt={nextProject.title}
+                  className="w-full h-full object-cover" 
+                />
+                <div className={`absolute inset-0 bg-gradient-to-t ${nextProject.bg} opacity-60`} />
               </div>
 
-              <div className="flex justify-between items-center text-[10px] text-white/70 font-mono border-t border-white/10 pt-2">
-                <span>Indie Folk / Rock</span>
-                <span>04:12</span>
+              {/* Center active cover */}
+              <div 
+                onClick={() => {
+                  const target = allRepos?.find(r => r.slug === currentProject.slug);
+                  if (target && onOpenRepo) onOpenRepo(target);
+                }}
+                className="relative z-10 w-44 sm:w-52 h-44 sm:h-52 rounded-2xl overflow-hidden shadow-[0_25px_50px_rgba(0,0,0,0.8)] cursor-pointer hover:scale-105 transition-all border-2 border-white/20 group"
+                title={`Click to open ${currentProject.title}`}
+              >
+                <img 
+                  src={currentProject.artwork} 
+                  alt={currentProject.title}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                />
+                <div className={`absolute inset-0 bg-gradient-to-t ${currentProject.bg} opacity-60`} />
+                
+                <div className="absolute inset-0 p-4 flex flex-col justify-between text-white">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-mono uppercase bg-black/50 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/15">
+                      MASTER STEM
+                    </span>
+                    <Disc3 className="w-5 h-5 text-[#f5be57] animate-spin" />
+                  </div>
+
+                  <div>
+                    <span className="font-extrabold text-sm sm:text-base tracking-tight block drop-shadow-md">
+                      {currentProject.title}
+                    </span>
+                    <span className="text-[10px] text-amber-200 font-mono block">
+                      {currentProject.bpm} BPM • {currentProject.key}
+                    </span>
+                  </div>
+                </div>
               </div>
+
             </div>
+
+            {/* Carousel navigation dots */}
+            <div className="flex items-center space-x-2 pt-3">
+              {featuredProjects.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setFeaturedIndex(idx)}
+                  className={`h-2 rounded-full transition-all ${
+                    featuredIndex === idx 
+                      ? 'w-6 bg-[#f5be57]' 
+                      : 'w-2 bg-white/25 hover:bg-white/50'
+                  }`}
+                  title={`Slide ${idx + 1}`}
+                />
+              ))}
+            </div>
+
           </div>
 
         </div>
+
       </div>
 
-      {/* 2. Popular Collaborators matching Dribbble row */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold font-sans tracking-tight text-[#1c1e21]">
-            Popular Collaborators & Artists
-          </h2>
-          <button className="text-xs text-[#7a7e85] hover:text-[#1c1e21] font-medium flex items-center space-x-1">
-            <span>See all</span>
-            <ChevronRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-
-        <div className="flex items-center space-x-4 overflow-x-auto pb-2">
-          {popularCollaborators.map((artist, idx) => (
-            <div 
-              key={idx}
-              className="flex flex-col items-center space-y-1.5 flex-shrink-0 cursor-pointer group"
-              onClick={onInviteModal}
-            >
-              <div className={`w-16 h-16 rounded-full bg-gradient-to-tr ${artist.color} p-0.5 shadow-sm group-hover:scale-105 transition-transform flex items-center justify-center text-white text-lg font-bold border-2 border-white`}>
-                <span>{artist.initial}</span>
-              </div>
-              <span className="text-xs font-semibold text-[#1c1e21] group-hover:text-[#a84c26] transition-colors">
-                {artist.name}
-              </span>
-              <span className="text-[10px] text-[#7a7e85] font-mono -mt-1">
-                {artist.role}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 3. Four KPI Metric Cards in clean porcelain white */}
+      {/* 2. Four Compact Statistics Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Card 1: Total Repositories */}
         <div className="bg-white p-4 rounded-2xl border border-[#e8e4dc] shadow-soft flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold text-[#7a7e85] uppercase font-mono">Total Repositories</span>
-            <div className="w-8 h-8 rounded-full bg-[#f0f9f4] flex items-center justify-center text-[#059669]">
+            <span className="text-[11px] font-bold text-[#7a7e85] uppercase font-mono tracking-wide">
+              Total Repositories
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-[#f0f9f4] flex items-center justify-center text-[#059669]">
               <Music className="w-4 h-4" />
             </div>
           </div>
-          <div className="flex items-end justify-between">
-            <div>
-              <div className="text-3xl font-extrabold font-sans text-[#1c1e21]">12</div>
-              <div className="text-[11px] text-[#059669] font-medium mt-1">↑ 3 this month</div>
+          <div>
+            <div className="text-2xl sm:text-3xl font-extrabold font-sans text-[#1c1e21]">
+              {totalReposCount}
             </div>
-            {/* Sparkline bars */}
-            <div className="flex items-end space-x-1 h-6">
-              <span className="w-1.5 h-2 bg-[#e2ded5] rounded-full"></span>
-              <span className="w-1.5 h-3.5 bg-[#e5a83b] rounded-full"></span>
-              <span className="w-1.5 h-5 bg-[#a84c26] rounded-full"></span>
-              <span className="w-1.5 h-6 bg-[#1c1e21] rounded-full"></span>
+            <div className="text-[11px] text-[#059669] font-medium mt-1">
+              Active song projects
             </div>
           </div>
         </div>
@@ -286,22 +499,19 @@ export const StudioDashboard = ({
         {/* Card 2: Collaborators */}
         <div className="bg-white p-4 rounded-2xl border border-[#e8e4dc] shadow-soft flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold text-[#7a7e85] uppercase font-mono">Collaborators</span>
-            <div className="w-8 h-8 rounded-full bg-[#eff6ff] flex items-center justify-center text-[#2563eb]">
+            <span className="text-[11px] font-bold text-[#7a7e85] uppercase font-mono tracking-wide">
+              Collaborators
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-[#eff6ff] flex items-center justify-center text-[#2563eb]">
               <Users className="w-4 h-4" />
             </div>
           </div>
-          <div className="flex items-end justify-between">
-            <div>
-              <div className="text-3xl font-extrabold font-sans text-[#1c1e21]">8</div>
-              <div className="text-[11px] text-[#7a7e85] mt-1">● 2 active now</div>
+          <div>
+            <div className="text-2xl sm:text-3xl font-extrabold font-sans text-[#1c1e21]">
+              {totalCollaboratorsCount}
             </div>
-            {/* Avatars */}
-            <div className="flex -space-x-1.5">
-              <div className="w-6 h-6 rounded-full bg-[#a84c26] text-white text-[10px] font-bold flex items-center justify-center border-2 border-white">V</div>
-              <div className="w-6 h-6 rounded-full bg-[#e5a83b] text-white text-[10px] font-bold flex items-center justify-center border-2 border-white">N</div>
-              <div className="w-6 h-6 rounded-full bg-[#2563eb] text-white text-[10px] font-bold flex items-center justify-center border-2 border-white">M</div>
-              <div className="w-6 h-6 rounded-full bg-[#1c1e21] text-white text-[9px] font-bold flex items-center justify-center border-2 border-white">+4</div>
+            <div className="text-[11px] text-[#7a7e85] font-medium mt-1">
+              Active in network
             </div>
           </div>
         </div>
@@ -309,19 +519,19 @@ export const StudioDashboard = ({
         {/* Card 3: Projects Owned */}
         <div className="bg-white p-4 rounded-2xl border border-[#e8e4dc] shadow-soft flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold text-[#7a7e85] uppercase font-mono">Projects Owned</span>
-            <div className="w-8 h-8 rounded-full bg-[#faf5ff] flex items-center justify-center text-[#7c3aed]">
+            <span className="text-[11px] font-bold text-[#7a7e85] uppercase font-mono tracking-wide">
+              Projects Owned
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-[#faf5ff] flex items-center justify-center text-[#7c3aed]">
               <FolderKanban className="w-4 h-4" />
             </div>
           </div>
-          <div className="flex items-end justify-between">
-            <div>
-              <div className="text-3xl font-extrabold font-sans text-[#1c1e21]">5</div>
-              <div className="text-[11px] text-[#7a7e85] mt-1">3 in progress</div>
+          <div>
+            <div className="text-2xl sm:text-3xl font-extrabold font-sans text-[#1c1e21]">
+              {projectsOwnedCount}
             </div>
-            {/* Amber Circular Ring Indicator */}
-            <div className="w-9 h-9 rounded-full border-2 border-[#e5a83b] bg-[#fffbeb] flex items-center justify-center font-bold text-[11px] text-[#b45309]">
-              60%
+            <div className="text-[11px] text-[#7a7e85] font-medium mt-1">
+              Created by you
             </div>
           </div>
         </div>
@@ -329,284 +539,295 @@ export const StudioDashboard = ({
         {/* Card 4: Storage Used */}
         <div className="bg-white p-4 rounded-2xl border border-[#e8e4dc] shadow-soft flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold text-[#7a7e85] uppercase font-mono">Storage Used</span>
-            <div className="w-8 h-8 rounded-full bg-[#fff7ed] flex items-center justify-center text-[#ea580c]">
+            <span className="text-[11px] font-bold text-[#7a7e85] uppercase font-mono tracking-wide">
+              Storage Used
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-[#fff7ed] flex items-center justify-center text-[#ea580c]">
               <HardDrive className="w-4 h-4" />
             </div>
           </div>
           <div>
-            <div className="text-xl font-bold font-sans text-[#1c1e21]">
-              2.4 GB <span className="text-xs font-normal text-[#7a7e85]">of 10 GB</span>
+            <div className="text-xl sm:text-2xl font-extrabold font-sans text-[#1c1e21]">
+              {storageUsed} <span className="text-xs font-normal text-[#7a7e85]">of {storageTotal}</span>
             </div>
-            {/* Progress bar with copper fill */}
-            <div className="w-full h-2 bg-[#f0ede6] rounded-full mt-2 relative overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-[#e5a83b] to-[#a84c26] rounded-full" style={{ width: '24%' }} />
+            <div className="w-full h-1.5 bg-[#f0ede6] rounded-full mt-2 relative overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-[#e5a83b] to-[#a84c26] rounded-full" 
+                style={{ width: `${storagePct}%` }} 
+              />
             </div>
           </div>
         </div>
 
       </div>
 
-      {/* 4. Lower Two-Column Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        {/* Left Column (68% width): Recent Song Repositories */}
-        <div className="lg:col-span-8 space-y-3">
-          
-          <div className="flex items-center justify-between">
+      {/* 3. Dedicated Collaborators Section: Displayed once with unique profiles */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div>
             <h2 className="text-base font-bold font-sans tracking-tight text-[#1c1e21]">
-              Recent Song Repositories
+              Studio Collaborators
             </h2>
-            <button className="text-xs text-[#7a7e85] hover:text-[#1c1e21] font-medium flex items-center space-x-1">
-              <span>View All</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
+            <p className="text-xs text-[#7a7e85]">
+              Musicians, producers, and vocalists in your creative circle
+            </p>
           </div>
 
-          <div className="space-y-2.5">
-            {filteredRepos.map((repo) => {
-              const meta = songThumbnails[repo.slug] || {
-                bg: 'from-[#475569] to-[#1e293b]',
-                label: repo.name,
-                tags: [repo.genre || 'Indie', 'Alternative'],
-                collabs: [repo.owner?.username || 'vikash'],
-                updated: `Updated on ${new Date(repo.updatedAt).toLocaleDateString()}`
-              };
+          <button
+            onClick={onInviteModal}
+            className="text-xs font-semibold text-[#a84c26] hover:text-[#6e2b13] flex items-center space-x-1 px-3 py-1.5 rounded-full hover:bg-[#fff7ed] transition-colors"
+          >
+            <UserPlus className="w-3.5 h-3.5" />
+            <span>Invite Collaborator</span>
+          </button>
+        </div>
 
-              return (
-                <div
-                  key={repo._id}
-                  className="bg-white p-3.5 rounded-2xl border border-[#e8e4dc] shadow-soft flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-[#a84c26]/40 hover:shadow-soft-lg transition-all group"
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
+          {collaborators.map((c) => (
+            <div 
+              key={c.username}
+              onClick={() => onOpenMessage ? onOpenMessage(c.username) : onInviteModal()}
+              className="bg-white p-4 sm:p-5 rounded-2xl border border-[#e8e4dc] shadow-soft hover:shadow-soft-lg hover:border-[#a84c26]/40 hover:-translate-y-0.5 transition-all cursor-pointer flex flex-col items-center text-center group"
+            >
+              {/* Perfectly round circular avatar with status dot */}
+              <div className="relative mb-3 flex-shrink-0">
+                <div className={`w-14 h-14 aspect-square rounded-full bg-gradient-to-tr ${c.color} shadow-md group-hover:scale-105 transition-transform flex items-center justify-center text-white text-lg font-bold border-2 border-white ring-2 ring-[#f0ede6]`}>
+                  <span>{c.initial}</span>
+                </div>
+                <span 
+                  className="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white shadow-xs" 
+                  title="Active in studio"
+                />
+              </div>
+
+              {/* Name */}
+              <span className="text-xs sm:text-sm font-bold text-[#1c1e21] group-hover:text-[#a84c26] transition-colors truncate w-full">
+                {c.name}
+              </span>
+
+              {/* Role badge */}
+              <span className="text-[10px] text-[#6b707b] font-medium mt-1 truncate w-full bg-[#f6f3ed] px-2 py-0.5 rounded-full border border-[#ebe5dc]">
+                {c.role}
+              </span>
+
+              {/* Quick Direct Message / Chat Trigger */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onOpenMessage) onOpenMessage(c.username);
+                }}
+                className="mt-3 px-3 py-1 rounded-full bg-[#f3efe9] hover:bg-[#1c1e24] text-[#4b4f57] hover:text-white text-[10px] font-semibold flex items-center space-x-1.5 transition-all shadow-2xs group-hover:bg-[#1c1e24] group-hover:text-white"
+                title={`Send direct message to ${c.name}`}
+              >
+                <MessageSquare className="w-3 h-3 text-[#20c9b0]" />
+                <span>Chat</span>
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 4. Bottom Area: Two columns (Recent Song Repositories on left, Recent Activity on right) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        {/* Left Column (lg:col-span-7 xl:col-span-8): Recent Song Repositories (LANDR reference inspired layout) */}
+        <div className="lg:col-span-7 xl:col-span-8 space-y-3.5">
+          
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center space-x-2">
+              <h2 className="text-base font-bold font-sans tracking-tight text-[#1c1e21]">
+                Recent Song Repositories
+              </h2>
+              <span className="text-[11px] font-mono text-[#7a7e85] bg-[#f0ede6] px-2 py-0.5 rounded-full font-semibold">
+                {filteredRepos.length} tracks
+              </span>
+            </div>
+
+            {/* Quick Tag Pills from LANDR Reference */}
+            <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+              {filterTags.map(tag => (
+                <button
+                  key={tag.id}
+                  onClick={() => setSelectedTag(tag.id)}
+                  className={`px-3 py-1 rounded-full text-[11px] font-medium whitespace-nowrap transition-all ${
+                    selectedTag === tag.id
+                      ? 'bg-[#1c1e21] text-white shadow-sm'
+                      : 'bg-[#f0ede6] text-[#60646c] hover:bg-[#e4ded4] hover:text-[#1c1e21]'
+                  }`}
                 >
-                  {/* Left: Thumbnail & Song Title & Tags */}
-                  <div className="flex items-center space-x-3.5 min-w-0 flex-1">
-                    <div 
-                      onClick={() => onOpenRepo(repo)}
-                      className={`w-12 h-12 flex-shrink-0 rounded-xl bg-gradient-to-br ${meta.bg} shadow-sm cursor-pointer flex items-center justify-center text-white group-hover:scale-105 transition-transform`}
-                    >
-                      <Disc3 className="w-6 h-6 text-[#f5be57]" />
-                    </div>
+                  {tag.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
-                    <div className="min-w-0 space-y-1">
+          {/* Table Header Row (Desktop LANDR layout) */}
+          <div className="hidden md:grid grid-cols-12 gap-3 px-4 py-2 text-[10px] font-mono font-bold uppercase tracking-wider text-[#7a7e85] border-b border-[#ece8e1]">
+            <div className="col-span-5">Song & Tags</div>
+            <div className="col-span-3">Waveform Preview</div>
+            <div className="col-span-1 text-center">Time</div>
+            <div className="col-span-1 text-center">BPM</div>
+            <div className="col-span-1 text-center">Key</div>
+            <div className="col-span-1 text-right">Action</div>
+          </div>
+
+          {/* List of Repositories */}
+          <div className="space-y-2">
+            {filteredRepos.length === 0 ? (
+              <div className="bg-white p-8 rounded-2xl border border-[#e8e4dc] text-center space-y-2">
+                <Disc3 className="w-8 h-8 text-[#8c9099] mx-auto opacity-50" />
+                <p className="text-xs font-medium text-[#7a7e85]">
+                  No repositories found matching your selection.
+                </p>
+              </div>
+            ) : (
+              filteredRepos.map((repo) => {
+                const meta = songThumbnails[repo.slug] || {
+                  bg: 'from-[#475569] to-[#1e293b]',
+                  label: repo.name,
+                  tags: [repo.genre?.toLowerCase() || 'indie'],
+                  duration: '03:30',
+                  bpm: repo.bpm || 120,
+                  key: repo.keySignature || 'C maj',
+                  timeSig: repo.timeSignature || '4/4',
+                  status: repo.status || 'Active',
+                  waveform: [20, 40, 60, 80, 70, 90, 85, 75, 60, 80, 95, 70, 50, 65, 80, 60, 45, 30]
+                };
+
+                return (
+                  <div
+                    key={repo._id}
+                    className="bg-white p-3 sm:px-4 sm:py-3 rounded-2xl border border-[#e8e4dc] shadow-soft hover:border-[#a84c26]/40 hover:shadow-soft-lg transition-all group flex flex-col md:grid md:grid-cols-12 gap-3 items-center"
+                  >
+                    {/* Col 1-5: Artwork + Title & Tags (LANDR Sample Style) */}
+                    <div className="w-full md:col-span-5 flex items-center space-x-3 min-w-0">
                       <div 
                         onClick={() => onOpenRepo(repo)}
-                        className="font-bold text-sm text-[#1c1e21] font-sans truncate hover:text-[#a84c26] cursor-pointer"
+                        className={`w-11 h-11 flex-shrink-0 rounded-xl bg-gradient-to-br ${meta.bg} shadow-sm cursor-pointer flex items-center justify-center text-white group-hover:scale-105 transition-transform`}
                       >
-                        {meta.label || repo.name}
+                        <Disc3 className="w-5 h-5 text-[#f5be57]" />
                       </div>
 
-                      {/* Genre pills */}
-                      <div className="flex flex-wrap items-center gap-1.5 font-mono text-[10px]">
-                        {(meta.tags || [repo.genre]).map((t, tIdx) => (
-                          <span key={tIdx} className="bg-[#f3efe9] text-[#555962] px-2 py-0.5 rounded-full font-medium">
-                            {t}
-                          </span>
-                        ))}
+                      <div className="min-w-0 flex-1">
+                        <div 
+                          onClick={() => onOpenRepo(repo)}
+                          className="font-bold text-xs sm:text-sm text-[#1c1e21] font-sans truncate hover:text-[#a84c26] cursor-pointer"
+                        >
+                          {repo.name || meta.label}
+                        </div>
+
+                        {/* LANDR-style Tag Tokens underneath name */}
+                        <div className="flex flex-wrap items-center gap-1 mt-0.5">
+                          {(meta.tags || [repo.genre?.toLowerCase() || 'indie']).map((tag, tIdx) => (
+                            <span 
+                              key={tIdx} 
+                              className="text-[10px] font-mono text-[#7a7e85] bg-[#f5f2ec] px-1.5 py-0.5 rounded-md hover:bg-[#eae4d9] transition-colors"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Golden Amber Waveform preview snippet */}
-                  <div className="hidden md:flex items-center space-x-1 px-3 h-8 w-32 flex-shrink-0">
-                    {[15, 30, 60, 95, 50, 100, 70, 35, 80, 90, 45, 25, 70, 85, 30].map((h, i) => (
-                      <span
-                        key={i}
-                        className="w-1 bg-[#e5a83b] rounded-full opacity-80 group-hover:opacity-100 transition-opacity"
-                        style={{ height: `${h}%` }}
-                      />
-                    ))}
-                  </div>
+                    {/* Col 6-8: Waveform Visualization (LANDR Amplitude Bars) */}
+                    <div className="hidden md:flex md:col-span-3 items-center space-x-0.5 h-7 px-1 bg-[#faf8f5] rounded-lg py-1 border border-[#f0ede6]">
+                      {(meta.waveform || [30, 50, 70, 90, 60, 80, 100, 75, 55, 70, 85, 60, 40, 55, 75, 60, 45, 30]).map((h, i) => (
+                        <span
+                          key={i}
+                          className="flex-1 bg-[#8c9099] rounded-full group-hover:bg-[#e5a83b] transition-colors"
+                          style={{ height: `${h}%` }}
+                        />
+                      ))}
+                    </div>
 
-                  {/* Collaborator Avatars */}
-                  <div className="flex -space-x-1.5 flex-shrink-0">
-                    {(meta.collabs || ['vikash']).slice(0, 3).map((collab, cIdx) => (
-                      <div
-                        key={cIdx}
-                        className="w-6 h-6 rounded-full border-2 border-white bg-[#ece8e1] flex items-center justify-center text-[10px] font-bold text-[#1c1e21] font-mono shadow-sm"
-                        title={`@${collab}`}
+                    {/* Col 9: Duration */}
+                    <div className="hidden md:block md:col-span-1 text-center font-mono text-xs text-[#6e7279]">
+                      {meta.duration}
+                    </div>
+
+                    {/* Col 10: BPM */}
+                    <div className="hidden md:block md:col-span-1 text-center font-mono text-xs font-semibold text-[#1c1e21]">
+                      {repo.bpm || meta.bpm}
+                    </div>
+
+                    {/* Col 11: Musical Key */}
+                    <div className="hidden md:block md:col-span-1 text-center font-mono text-[11px] text-[#a84c26] font-semibold bg-[#fff7ed] px-1 py-0.5 rounded border border-[#fed7aa]/50">
+                      {meta.key || repo.keySignature}
+                    </div>
+
+                    {/* Col 12: Open Button & Mobile Metadata Cluster */}
+                    <div className="w-full md:col-span-1 flex items-center justify-between md:justify-end gap-2 border-t md:border-t-0 border-[#f0ede6] pt-2 md:pt-0">
+                      {/* Mobile Metadata tags */}
+                      <div className="flex md:hidden items-center space-x-2 font-mono text-[10px] text-[#7a7e85]">
+                        <span>{meta.duration}</span>
+                        <span>•</span>
+                        <span>{repo.bpm || meta.bpm} BPM</span>
+                        <span>•</span>
+                        <span className="text-[#a84c26] font-semibold">{meta.key || repo.keySignature}</span>
+                      </div>
+
+                      <button
+                        onClick={() => onOpenRepo(repo)}
+                        className="studio-btn-primary px-3 py-1.5 text-xs font-sans flex items-center space-x-1 shadow-sm flex-shrink-0"
                       >
-                        {collab[0].toUpperCase()}
-                      </div>
-                    ))}
-                    {(meta.collabs || []).length > 3 && (
-                      <div className="w-6 h-6 rounded-full border-2 border-white bg-[#1c1e21] text-[#f5be57] flex items-center justify-center text-[9px] font-bold font-mono">
-                        +{meta.collabs.length - 3}
-                      </div>
-                    )}
-                  </div>
+                        <span>Open</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
 
-                  {/* Metadata updated info */}
-                  <div className="text-[10px] font-mono text-[#8c9099] whitespace-nowrap hidden sm:block">
-                    {meta.updated}
                   </div>
-
-                  {/* Open Pill Button */}
-                  <div className="flex items-center space-x-2 flex-shrink-0">
-                    <button
-                      onClick={() => onOpenRepo(repo)}
-                      className="studio-btn-primary px-3.5 py-1.5 text-xs font-sans flex items-center space-x-1 shadow-sm"
-                    >
-                      <span>Open</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
 
         </div>
 
-        {/* Right Column (32% width): Recent Activity & Quick Actions */}
-        <div className="lg:col-span-4 space-y-6">
+        {/* Right Column (lg:col-span-5 xl:col-span-4): Recent Activity exclusively */}
+        <div className="lg:col-span-5 xl:col-span-4 space-y-3.5">
           
-          {/* Recent Activity Card */}
-          <div className="bg-white p-5 rounded-3xl border border-[#e8e4dc] shadow-soft space-y-3.5 text-xs">
-            <div className="flex items-center justify-between border-b border-[#ece8e1] pb-2.5">
-              <h3 className="font-bold text-sm font-sans tracking-tight text-[#1c1e21]">
-                Recent Activity
-              </h3>
-              <button className="text-[#7a7e85] hover:text-[#1c1e21] font-medium flex items-center space-x-0.5 text-[11px]">
-                <span>View All</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-bold font-sans tracking-tight text-[#1c1e21]">
+              Recent Activity
+            </h2>
+            <span className="text-[10px] font-mono text-[#7a7e85] uppercase tracking-wider bg-[#f0ede6] px-2 py-0.5 rounded-full font-semibold">
+              Live Feed
+            </span>
+          </div>
 
-            <div className="space-y-3.5">
-              {activities.slice(0, 5).map((act, idx) => (
-                <div key={act._id || idx} className="flex items-start space-x-3">
-                  <div className="w-7 h-7 rounded-full bg-[#f3efe9] border border-[#e2ded5] flex-shrink-0 flex items-center justify-center font-bold text-xs text-[#a84c26]">
-                    {act.user?.username?.[0]?.toUpperCase() || 'U'}
+          <div className="bg-white p-4 sm:p-5 rounded-3xl border border-[#e8e4dc] shadow-soft space-y-3 text-xs">
+            {activities.length === 0 ? (
+              <p className="text-neutral-500 text-xs py-3 text-center">
+                No recent activity recorded.
+              </p>
+            ) : (
+              activities.slice(0, 6).map((act, idx) => (
+                <div key={act._id || idx} className="flex items-start space-x-3 pb-3 border-b border-[#f3efe9] last:border-b-0 last:pb-0">
+                  <div className="w-7 h-7 rounded-xl bg-[#f5f2ec] border border-[#e2ded5] flex-shrink-0 flex items-center justify-center">
+                    {getActivityIcon(act.action)}
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <p className="text-[#3a3d44] text-[11px] leading-snug">
                       <strong className="text-[#1c1e21] font-bold">
-                        {act.user?.username === 'vikash' ? 'You' : act.user?.displayName || act.user?.username}
+                        {act.user?.username === user?.username ? 'You' : act.user?.displayName || act.user?.username || 'Collaborator'}
                       </strong>{' '}
                       {act.details}
                     </p>
                     <span className="text-[9px] text-[#8c9099] block mt-0.5 font-mono">
-                      {new Date(act.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {formatActivityTime(act.createdAt)}
                     </span>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Quick Actions 2x2 Grid matching Dribbble */}
-          <div className="bg-white p-5 rounded-3xl border border-[#e8e4dc] shadow-soft space-y-3.5 text-xs">
-            <div className="border-b border-[#ece8e1] pb-2">
-              <h3 className="font-bold text-sm font-sans tracking-tight text-[#1c1e21]">
-                Quick Actions
-              </h3>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2.5">
-              
-              <button
-                onClick={onOpenNewRepoModal}
-                className="p-3.5 rounded-2xl bg-[#f8f6f2] hover:bg-[#fff7ed] border border-[#ece8e1] hover:border-[#fed7aa] transition-all text-center flex flex-col items-center justify-center space-y-1.5 group shadow-sm"
-              >
-                <div className="w-8 h-8 rounded-full bg-[#f0f9f4] flex items-center justify-center text-[#059669] group-hover:scale-110 transition-transform">
-                  <Music className="w-4 h-4" />
-                </div>
-                <span className="font-bold text-[11px] text-[#1c1e21]">New Repository</span>
-              </button>
-
-              <button
-                onClick={onInviteModal}
-                className="p-3.5 rounded-2xl bg-[#f8f6f2] hover:bg-[#eff6ff] border border-[#ece8e1] hover:border-[#bfdbfe] transition-all text-center flex flex-col items-center justify-center space-y-1.5 group shadow-sm"
-              >
-                <div className="w-8 h-8 rounded-full bg-[#eff6ff] flex items-center justify-center text-[#2563eb] group-hover:scale-110 transition-transform">
-                  <Users className="w-4 h-4" />
-                </div>
-                <span className="font-bold text-[11px] text-[#1c1e21]">Invite Collaborators</span>
-              </button>
-
-              <button
-                onClick={() => alert('Loaded templates: Indie Rock Multi-track, Acoustic Ballad, and Lo-fi Hip Hop stem templates.')}
-                className="p-3.5 rounded-2xl bg-[#f8f6f2] hover:bg-[#faf5ff] border border-[#ece8e1] hover:border-[#e9d5ff] transition-all text-center flex flex-col items-center justify-center space-y-1.5 group shadow-sm"
-              >
-                <div className="w-8 h-8 rounded-full bg-[#faf5ff] flex items-center justify-center text-[#7c3aed] group-hover:scale-110 transition-transform">
-                  <LayoutGrid className="w-4 h-4" />
-                </div>
-                <span className="font-bold text-[11px] text-[#1c1e21]">Browse Templates</span>
-              </button>
-
-              <button
-                onClick={() => alert('Analytics: Stems tracked: 18 takes across 5 song repositories. 0 conflicts lost.')}
-                className="p-3.5 rounded-2xl bg-[#f8f6f2] hover:bg-[#fffbeb] border border-[#ece8e1] hover:border-[#fde68a] transition-all text-center flex flex-col items-center justify-center space-y-1.5 group shadow-sm"
-              >
-                <div className="w-8 h-8 rounded-full bg-[#fffbeb] flex items-center justify-center text-[#d97706] group-hover:scale-110 transition-transform">
-                  <BarChart3 className="w-4 h-4" />
-                </div>
-                <span className="font-bold text-[11px] text-[#1c1e21]">View Analytics</span>
-              </button>
-
-            </div>
+              ))
+            )}
           </div>
 
         </div>
 
       </div>
-
-      {/* Interactive Watch Demo Modal */}
-      {showDemoVideoModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white max-w-lg w-full p-6 rounded-3xl shadow-player border border-[#e2ded5] space-y-4 text-xs font-sans">
-            <div className="flex items-center justify-between border-b border-[#ece8e1] pb-3">
-              <span className="font-bold uppercase tracking-wider text-[#1c1e21] font-mono">
-                [STUDIO DEMO] HOW MUSICCOLLAB WORKS
-              </span>
-              <button 
-                onClick={() => setShowDemoVideoModal(false)}
-                className="text-neutral-500 hover:text-black font-bold p-1"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              <div className="p-3.5 rounded-2xl bg-[#f8f5ee] border border-[#ece8e1] space-y-1.5">
-                <span className="font-bold text-xs text-[#a84c26] block">1. BRANCHING FOR MUSICIANS</span>
-                <p className="text-xs text-[#4b4f57] leading-relaxed">
-                  Maya records on branch <code className="bg-white px-1.5 py-0.5 rounded border border-[#e2ded5] font-mono">vocals/harmonies</code>. Sid tracks on <code className="bg-white px-1.5 py-0.5 rounded border border-[#e2ded5] font-mono">guitar/solo</code>. The main mix stays clean until reviewed.
-                </p>
-              </div>
-
-              <div className="p-3.5 rounded-2xl bg-[#f8f5ee] border border-[#ece8e1] space-y-1.5">
-                <span className="font-bold text-xs text-[#a84c26] block">2. MULTITRACK STUDIO & TAKES</span>
-                <p className="text-xs text-[#4b4f57] leading-relaxed">
-                  Listen to synchronized stems, toggle Mute/Solo, scrub waveforms, and leave timestamped feedback at exact seconds.
-                </p>
-              </div>
-
-              <div className="p-3.5 rounded-2xl bg-[#f8f5ee] border border-[#ece8e1] space-y-1.5">
-                <span className="font-bold text-xs text-[#a84c26] block">3. PULL REQUESTS & IMMUTABLE COMMITS</span>
-                <p className="text-xs text-[#4b4f57] leading-relaxed">
-                  Open a pull request to merge takes into main. Revert any commit or restore older takes in 1 click.
-                </p>
-              </div>
-            </div>
-
-            <div className="pt-2">
-              <button
-                onClick={() => {
-                  setShowDemoVideoModal(false);
-                  const song = allRepos?.find(r => r.slug === 'adhoori-kahani');
-                  if (song && onOpenRepo) onOpenRepo(song);
-                }}
-                className="studio-btn-amber w-full py-3 font-bold shadow-copper text-sm"
-              >
-                OPEN "AHOORI KAHANI" WORKSPACE NOW
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );

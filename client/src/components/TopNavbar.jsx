@@ -3,18 +3,15 @@ import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import { 
   Search, 
-  Plus, 
   Bell, 
+  MessageSquare,
   ChevronDown, 
   Menu, 
   LogOut, 
-  CheckCircle2, 
-  SlidersHorizontal,
-  Flame,
-  Radio
+  CheckCircle2
 } from 'lucide-react';
 
-export const TopNavbar = ({ onOpenNewRepoModal, onToggleSidebar, onSearch, searchQuery }) => {
+export const TopNavbar = ({ onOpenNewRepoModal, onToggleSidebar, onSearch, searchQuery, activeNav = 'dashboard', setActiveNav, onToggleMessages }) => {
   const { user, logout, switchDemoAccount } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -82,25 +79,52 @@ export const TopNavbar = ({ onOpenNewRepoModal, onToggleSidebar, onSearch, searc
   return (
     <header className="sticky top-0 z-30 bg-[#fbfaf8]/90 backdrop-blur-md border-b border-[#e7e2d9] px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
       
-      {/* Left: Mobile hamburger + Breadcrumb path from Dribbble shot */}
-      <div className="flex items-center space-x-3 flex-1 max-w-2xl">
+      {/* Left: Mobile hamburger + Navigation links */}
+      <div className="flex items-center space-x-3 flex-1 max-w-2xl min-w-0">
         <button
           onClick={onToggleSidebar}
-          className="lg:hidden p-2 rounded-xl border border-[#e2ded5] bg-white shadow-sm"
+          className="lg:hidden p-2 rounded-xl border border-[#e2ded5] bg-white shadow-sm flex-shrink-0"
           title="Toggle Navigation Menu"
         >
           <Menu className="w-4 h-4 text-neutral-700" />
         </button>
 
-        {/* Breadcrumb breadcrumb links matching Dribbble shot */}
-        <div className="hidden sm:flex items-center space-x-2 text-xs text-[#7a7e85]">
-          <span className="hover:text-black cursor-pointer">Artists</span>
-          <span>&rsaquo;</span>
-          <span className="font-semibold text-[#1c1e21]">Top 2026</span>
-        </div>
+        {/* Top Navigation Links */}
+        <nav className="hidden md:flex items-center space-x-1 text-xs flex-shrink-0">
+          <button
+            onClick={() => setActiveNav && setActiveNav('dashboard')}
+            className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
+              activeNav === 'dashboard'
+                ? 'bg-[#232528] text-white shadow-sm'
+                : 'text-[#6e7279] hover:text-[#1c1e21] hover:bg-[#ede8dc]'
+            }`}
+          >
+            Dashboard
+          </button>
+          <button
+            onClick={() => setActiveNav && setActiveNav('repositories')}
+            className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
+              activeNav === 'repositories'
+                ? 'bg-[#232528] text-white shadow-sm'
+                : 'text-[#6e7279] hover:text-[#1c1e21] hover:bg-[#ede8dc]'
+            }`}
+          >
+            Repositories
+          </button>
+          <button
+            onClick={() => setActiveNav && setActiveNav('collaborations')}
+            className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
+              activeNav === 'collaborations'
+                ? 'bg-[#232528] text-white shadow-sm'
+                : 'text-[#6e7279] hover:text-[#1c1e21] hover:bg-[#ede8dc]'
+            }`}
+          >
+            Collaborations
+          </button>
+        </nav>
 
-        {/* Global Pill Search Bar from Dribbble shot */}
-        <div className="relative w-full max-w-md ml-2">
+        {/* Global Pill Search Bar */}
+        <div className="relative w-full max-w-md ml-1">
           <Search className="w-3.5 h-3.5 text-[#8c9099] absolute left-3.5 top-3" />
           <input
             id="studio-search-input"
@@ -117,29 +141,17 @@ export const TopNavbar = ({ onOpenNewRepoModal, onToggleSidebar, onSearch, searc
         </div>
       </div>
 
-      {/* Right Action Cluster */}
-      <div className="flex items-center space-x-3">
-        
-        {/* Quick filter pills from Dribbble shot */}
-        <div className="hidden xl:flex items-center space-x-2 text-xs text-[#6e7279]">
-          <button className="px-3 py-1.5 rounded-full hover:bg-[#ede8dc] transition-colors font-medium">
-            New Releases
-          </button>
-          <button className="px-3 py-1.5 rounded-full hover:bg-[#ede8dc] transition-colors font-medium">
-            New Stems
-          </button>
-          <button className="px-3 py-1.5 rounded-full hover:bg-[#ede8dc] transition-colors font-medium">
-            Shuffle Play
-          </button>
-        </div>
+      {/* Right: Messages, Notifications & User Profile */}
+      <div className="flex items-center space-x-2.5 flex-shrink-0">
 
-        {/* + New Song Repository Button (Amber-gold pill) */}
+        {/* Messages Button with Live Badge */}
         <button
-          onClick={onOpenNewRepoModal}
-          className="studio-btn-amber px-4 py-2 text-xs font-bold flex items-center space-x-1.5 shadow-sm"
+          onClick={onToggleMessages}
+          className="w-9 h-9 rounded-full border border-[#e4dfd6] bg-white flex items-center justify-center hover:bg-[#f5f2ec] transition-colors relative shadow-sm"
+          title="Studio Messages"
         >
-          <Plus className="w-3.5 h-3.5 stroke-[3]" />
-          <span className="hidden sm:inline">New Song Repository</span>
+          <MessageSquare className="w-4 h-4 text-[#2b2d30]" />
+          <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#20c9b0] border-2 border-white" />
         </button>
 
         {/* Notifications Icon with Badge */}

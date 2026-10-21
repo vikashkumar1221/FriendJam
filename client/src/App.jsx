@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthPage } from './components/AuthPage';
 import { Sidebar } from './components/Sidebar';
 import { TopNavbar } from './components/TopNavbar';
 import { StudioDashboard } from './components/StudioDashboard';
+import { StudioMessageBox } from './components/StudioMessageBox';
 import { RepositoryView } from './components/RepositoryView';
 import { 
   SongsRepositoryView,
@@ -16,14 +18,19 @@ import {
   StudioHelpView
 } from './components/StudioViews';
 import { api } from './services/api';
+import { Disc3 } from 'lucide-react';
 
 const MainApp = () => {
-  const { user, switchDemoAccount } = useAuth();
+  const { user, loading, switchDemoAccount } = useAuth();
   const [allRepos, setAllRepos] = useState([]);
   const [selectedRepo, setSelectedRepo] = useState(null);
   const [activeNav, setActiveNav] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Messaging state
+  const [isMessagesOpen, setIsMessagesOpen] = useState(false);
+  const [activeCollaboratorChat, setActiveCollaboratorChat] = useState(null);
   
   // Modals
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -41,13 +48,9 @@ const MainApp = () => {
   const [createError, setCreateError] = useState('');
 
   useEffect(() => {
-    if (!user) {
-      switchDemoAccount('vikash').catch(() => {});
+    if (user) {
+      loadRepositories();
     }
-  }, [user]);
-
-  useEffect(() => {
-    loadRepositories();
   }, [user]);
 
   const loadRepositories = async () => {
@@ -58,6 +61,22 @@ const MainApp = () => {
       // ignore
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0d0e11] flex items-center justify-center text-white font-mono">
+        <div className="flex flex-col items-center space-y-3">
+          <Disc3 className="w-8 h-8 text-[#20c9b0] animate-spin" />
+          <span className="text-xs tracking-wider text-neutral-400">CONNECTING TO MUSICCOLLAB STUDIO...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // If not logged in, show LANDR-style Split-Screen Auth Page
+  if (!user) {
+    return <AuthPage />;
+  }
 
   const handleCreateRepo = async (e) => {
     e.preventDefault();
@@ -110,12 +129,17 @@ const MainApp = () => {
           {/* 2. Main Content Area */}
           <div className="flex-1 lg:pl-64 flex flex-col min-w-0 min-h-screen bg-[#fbfaf8]">
             
-            {/* Top Navbar with pill search and gold button */}
+            {/* Top Navbar limited to search, navigation links, notifications, and user profile */}
             <TopNavbar 
-              onOpenNewRepoModal={() => setShowCreateModal(true)}
               onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
               searchQuery={searchQuery}
               onSearch={(q) => setSearchQuery(q)}
+              activeNav={activeNav}
+              setActiveNav={(nav) => {
+                setActiveNav(nav);
+                setSelectedRepo(null);
+              }}
+              onToggleMessages={() => setIsMessagesOpen(!isMessagesOpen)}
             />
 
             {/* Content view */}
@@ -169,7 +193,12 @@ const MainApp = () => {
                   onOpenNewRepoModal={() => setShowCreateModal(true)}
                   onInviteModal={() => setShowInviteModal(true)}
                   searchQuery={searchQuery}
+                  onSearch={(q) => setSearchQuery(q)}
                   onRefreshRepos={loadRepositories}
+                  onOpenMessage={(username) => {
+                    setActiveCollaboratorChat(username);
+                    setIsMessagesOpen(true);
+                  }}
                 />
               )}
             </main>
@@ -327,6 +356,15 @@ const MainApp = () => {
           </div>
         </div>
       )}
+
+      {/* Floating Interactive Studio Message Box */}
+      <StudioMessageBox 
+        isOpen={isMessagesOpen}
+        onOpen={() => setIsMessagesOpen(true)}
+        onClose={() => setIsMessagesOpen(false)}
+        activeCollaborator={activeCollaboratorChat}
+        onSelectCollaborator={(u) => setActiveCollaboratorChat(u)}
+      />
 
     </div>
   );
