@@ -4,89 +4,103 @@
 
 @layer base {
   body {
-    background-color: #f5f3ec;
-    color: #111111;
+    background-color: #b0a698; /* Warm dusty taupe clay ambient background from Dribbble shot */
+    color: #1c1e21;
     font-family: 'Space Grotesk', -apple-system, sans-serif;
   }
 }
 
-/* Custom scrollbar in brutalist workshop style */
+/* Custom scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #ede8dc;
-  border-left: 2px solid #111111;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #111111;
+  background: #393c41;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #333333;
+  background: #50545c;
 }
 
-/* Utility classes for Neo-Brutalist components */
-.brutal-card {
-  background-color: #faf9f5;
-  border: 2px solid #111111;
-  box-shadow: 4px 4px 0px #111111;
+/* Studio & Dribbble Concept Palette Utility Classes */
+.app-window {
+  background-color: #fbfaf8;
+  border: 1px solid #d4cdc3;
+  box-shadow: 0 25px 60px -15px rgba(35, 30, 24, 0.35);
+  border-radius: 1.5rem;
+  overflow: hidden;
 }
 
-.brutal-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  border: 2px solid #111111;
-  box-shadow: 3px 3px 0px #111111;
-  transition: all 0.08s ease;
-  user-select: none;
-}
-.brutal-btn:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0px #111111;
-}
-.brutal-btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0px #111111;
-}
-
-.brutal-btn-acid {
-  background-color: #d7ff3b;
-  color: #111111;
-}
-.brutal-btn-acid:hover {
-  background-color: #e2f952;
-}
-
-.brutal-btn-dark {
-  background-color: #111111;
-  color: #faf9f5;
-}
-.brutal-btn-dark:hover {
-  background-color: #222222;
-}
-
-.brutal-input {
-  border: 2px solid #111111;
+.studio-card {
   background-color: #ffffff;
-  padding: 0.5rem 0.75rem;
-  font-family: 'JetBrains Mono', monospace;
-  outline: none;
-  transition: all 0.1s ease;
+  border: 1px solid #e7e2d9;
+  border-radius: 1rem;
+  box-shadow: 0 4px 16px -2px rgba(28, 30, 33, 0.04);
 }
-.brutal-input:focus {
-  background-color: #faf9f5;
-  box-shadow: 3px 3px 0px #d7ff3b;
+
+.studio-btn-primary {
+  background-color: #1c1e21;
+  color: #ffffff;
+  border-radius: 9999px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+.studio-btn-primary:hover {
+  background-color: #2b2e33;
+  transform: translateY(-1px);
+}
+
+.studio-btn-amber {
+  background-color: #e5a83b;
+  color: #1c1e21;
+  border-radius: 9999px;
+  font-weight: 700;
+  transition: all 0.15s ease;
+}
+.studio-btn-amber:hover {
+  background-color: #f0b548;
+  transform: translateY(-1px);
+}
+
+.studio-btn-copper {
+  background-color: #a84c26;
+  color: #ffffff;
+  border-radius: 9999px;
+  font-weight: 700;
+  transition: all 0.15s ease;
+}
+.studio-btn-copper:hover {
+  background-color: #ba572f;
+  transform: translateY(-1px);
+}
+
+.studio-input {
+  border: 1px solid #e2ded5;
+  background-color: #f5f2ec;
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.85rem;
+  font-family: 'Space Grotesk', sans-serif;
+  outline: none;
+  transition: all 0.15s ease;
+}
+.studio-input:focus {
+  background-color: #ffffff;
+  border-color: #a84c26;
+  box-shadow: 0 0 0 2px rgba(168, 76, 38, 0.15);
 }
 
 .technical-badge {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
-  letter-spacing: -0.02em;
-  padding: 2px 6px;
-  border: 1.5px solid #111111;
+  font-size: 0.72rem;
+  letter-spacing: -0.01em;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  background-color: #ebe6de;
+  color: #4a4d54;
   display: inline-flex;
   align-items: center;
 }
