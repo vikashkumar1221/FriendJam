@@ -22,7 +22,8 @@ import {
   ChevronDown,
   ShieldCheck,
   Disc3,
-  Sparkles
+  Sparkles,
+  Heart
 } from 'lucide-react';
 
 export const RepositoryView = ({ repo, onBackToDashboard }) => {
@@ -50,81 +51,81 @@ export const RepositoryView = ({ repo, onBackToDashboard }) => {
   };
 
   const tabs = [
-    { id: 'tracks', label: '[01] MULTITRACK STUDIO', icon: Music },
-    { id: 'lyrics', label: '[02] LYRICS EDITOR', icon: FileText },
-    { id: 'commits', label: '[03] COMMITS LOG', icon: GitCommit },
-    { id: 'pulls', label: '[04] PULL REQUESTS', icon: GitPullRequest },
-    { id: 'branches', label: '[05] BRANCHES', icon: GitBranch },
-    { id: 'settings', label: '[06] COLLABORATORS & ACCESS', icon: Settings },
-    { id: 'recovery', label: '[07] TRASH & AUDIT', icon: Trash2 },
+    { id: 'tracks', label: 'Multitrack Studio', icon: Music },
+    { id: 'lyrics', label: 'Lyrics Editor', icon: FileText },
+    { id: 'commits', label: 'Commits Log', icon: GitCommit },
+    { id: 'pulls', label: 'Pull Requests', icon: GitPullRequest },
+    { id: 'branches', label: 'Branches', icon: GitBranch },
+    { id: 'settings', label: 'Collaborators & Access', icon: Settings },
+    { id: 'recovery', label: 'Trash & Audit', icon: Trash2 },
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
       
-      {/* Back to Dashboard breadcrumb */}
-      <div className="flex items-center justify-between font-mono text-xs">
+      {/* Top Breadcrumb Nav */}
+      <div className="flex items-center justify-between text-xs">
         <button
           onClick={onBackToDashboard}
-          className="hover:underline flex items-center space-x-1 font-bold text-neutral-700"
+          className="hover:text-[#a84c26] flex items-center space-x-1.5 font-medium text-[#7a7e85] transition-colors"
         >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>BACK TO ALL PROJECTS</span>
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to All Songs</span>
         </button>
 
         <div className="flex items-center space-x-2">
-          <span className="text-neutral-500">YOUR ROLE IN THIS REPO:</span>
-          <span className="bg-[#d7ff3b] text-black px-2 py-0.5 border border-black font-bold uppercase">
+          <span className="text-[#8c9099] font-mono text-[11px]">ROLE:</span>
+          <span className="bg-[#fff7ed] text-[#9a3412] px-2.5 py-0.5 rounded-full font-bold uppercase text-[11px] border border-[#fed7aa]">
             {userRole}
           </span>
         </div>
       </div>
 
       {/* Main Repository Header Card */}
-      <div className="brutal-card bg-white p-5 border-2 border-black space-y-4">
+      <div className="bg-white p-6 sm:p-7 rounded-3xl border border-[#e8e4dc] shadow-soft space-y-5">
         
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b-2 border-black pb-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 border-b border-[#ece8e1] pb-5">
           
-          <div className="space-y-1">
-            <div className="flex items-center space-x-2 font-mono text-xs">
-              <span className="text-neutral-500 font-medium">@{repoData.owner?.username || 'vikash'}</span>
-              <span className="text-neutral-400">/</span>
-              <span className="text-black font-bold">{repoData.slug}</span>
-              <span className="technical-badge bg-[#ede8dc] uppercase text-[10px]">
+          <div className="space-y-1.5">
+            <div className="flex items-center space-x-2 text-xs font-mono">
+              <span className="text-[#8c9099]">@{repoData.owner?.username || 'vikash'}</span>
+              <span className="text-neutral-300">/</span>
+              <span className="text-[#1c1e21] font-bold">{repoData.slug}</span>
+              <span className="bg-[#f0ede6] text-[#555962] px-2 py-0.5 rounded-full uppercase text-[10px] font-medium">
                 {repoData.visibility}
               </span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-black font-sans">
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#1c1e21] font-sans">
               {repoData.name}
             </h1>
 
             {repoData.description && (
-              <p className="text-xs text-neutral-700 max-w-2xl font-sans leading-relaxed pt-1">
+              <p className="text-xs sm:text-sm text-[#5b5f69] max-w-2xl leading-relaxed pt-0.5">
                 {repoData.description}
               </p>
             )}
           </div>
 
-          {/* Key musical parameters */}
-          <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
-            <div className="bg-[#ede8dc] border border-black p-2 text-center min-w-20">
-              <span className="text-[10px] text-neutral-500 block">KEY</span>
-              <span className="font-bold text-sm text-black">{repoData.keySignature}</span>
+          {/* Key musical parameters pills */}
+          <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono">
+            <div className="bg-[#f8f6f2] border border-[#e4dfd6] px-3.5 py-2 rounded-2xl text-center min-w-20 shadow-sm">
+              <span className="text-[10px] text-[#8c9099] block font-bold">KEY</span>
+              <span className="font-bold text-sm text-[#1c1e21]">{repoData.keySignature}</span>
             </div>
 
-            <div className="bg-[#ede8dc] border border-black p-2 text-center min-w-20">
-              <span className="text-[10px] text-neutral-500 block">TEMPO</span>
-              <span className="font-bold text-sm text-black">{repoData.bpm} BPM</span>
+            <div className="bg-[#f8f6f2] border border-[#e4dfd6] px-3.5 py-2 rounded-2xl text-center min-w-20 shadow-sm">
+              <span className="text-[10px] text-[#8c9099] block font-bold">TEMPO</span>
+              <span className="font-bold text-sm text-[#1c1e21]">{repoData.bpm} BPM</span>
             </div>
 
-            <div className="bg-[#ede8dc] border border-black p-2 text-center min-w-20">
-              <span className="text-[10px] text-neutral-500 block">METER</span>
-              <span className="font-bold text-sm text-black">{repoData.timeSignature}</span>
+            <div className="bg-[#f8f6f2] border border-[#e4dfd6] px-3.5 py-2 rounded-2xl text-center min-w-20 shadow-sm">
+              <span className="text-[10px] text-[#8c9099] block font-bold">METER</span>
+              <span className="font-bold text-sm text-[#1c1e21]">{repoData.timeSignature}</span>
             </div>
 
-            <div className="bg-black text-[#d7ff3b] border border-black p-2 text-center min-w-24">
-              <span className="text-[10px] text-neutral-400 block">STATUS</span>
+            <div className="bg-gradient-to-r from-[#a84c26] to-[#87381a] text-white px-4 py-2 rounded-2xl text-center min-w-24 shadow-copper">
+              <span className="text-[10px] text-[#f5be57] block font-bold uppercase">STATUS</span>
               <span className="font-bold text-sm uppercase">{repoData.status}</span>
             </div>
           </div>
@@ -132,24 +133,24 @@ export const RepositoryView = ({ repo, onBackToDashboard }) => {
         </div>
 
         {/* Branch Selector & Active Workspace Strip */}
-        <div className="flex flex-wrap items-center justify-between gap-3 font-mono text-xs pt-1">
+        <div className="flex flex-wrap items-center justify-between gap-3 text-xs pt-1">
           
-          <div className="flex items-center space-x-2">
-            <span className="text-neutral-500 font-bold">WORKING BRANCH:</span>
+          <div className="flex items-center space-x-2.5">
+            <span className="text-[#7a7e85] font-medium font-mono">BRANCH:</span>
             
             <div className="relative">
               <button
                 onClick={() => setShowBranchMenu(!showBranchMenu)}
-                className="brutal-btn bg-white px-3 py-1.5 flex items-center space-x-2 font-bold"
+                className="flex items-center space-x-2 px-3 py-1.5 rounded-full border border-[#e2ded5] bg-[#f8f6f2] hover:bg-[#f3efe9] font-semibold text-[#1c1e21] transition-all shadow-sm"
               >
-                <GitBranch className="w-3.5 h-3.5 text-neutral-700" />
+                <GitBranch className="w-3.5 h-3.5 text-[#a84c26]" />
                 <span>{currentBranch}</span>
-                <ChevronDown className="w-3.5 h-3.5" />
+                <ChevronDown className="w-3.5 h-3.5 text-[#8c9099]" />
               </button>
 
               {showBranchMenu && (
-                <div className="absolute left-0 mt-2 w-64 brutal-card bg-white z-40 p-2 text-xs">
-                  <div className="font-bold uppercase text-[10px] text-neutral-500 px-2 py-1 border-b border-black mb-1">
+                <div className="absolute left-0 mt-2 w-64 bg-white rounded-2xl shadow-soft-lg border border-[#e2ded5] z-40 p-2 text-xs">
+                  <div className="font-bold uppercase text-[10px] text-[#8c9099] px-2.5 py-1.5 border-b border-[#ece8e1] mb-1 font-mono">
                     Select Branch
                   </div>
                   <div className="space-y-1 max-h-48 overflow-y-auto">
@@ -160,13 +161,15 @@ export const RepositoryView = ({ repo, onBackToDashboard }) => {
                           setCurrentBranch(b.name);
                           setShowBranchMenu(false);
                         }}
-                        className={`w-full text-left px-2 py-1.5 border flex items-center justify-between ${
-                          currentBranch === b.name ? 'bg-[#d7ff3b] border-black font-bold' : 'bg-white hover:bg-neutral-100 border-neutral-300'
+                        className={`w-full text-left px-2.5 py-1.5 rounded-xl border flex items-center justify-between transition-colors ${
+                          currentBranch === b.name 
+                            ? 'bg-[#fff7ed] border-[#fed7aa] text-[#9a3412] font-bold' 
+                            : 'bg-white hover:bg-[#f5f2ec] border-transparent text-[#2b2d30]'
                         }`}
                       >
                         <span>{b.name}</span>
                         {b.name === (repoData.defaultBranch || 'main') && (
-                          <span className="text-[9px] bg-black text-white px-1">default</span>
+                          <span className="text-[9px] bg-[#1c1e21] text-white px-1.5 py-0.2 rounded-full">default</span>
                         )}
                       </button>
                     ))}
@@ -176,27 +179,27 @@ export const RepositoryView = ({ repo, onBackToDashboard }) => {
             </div>
 
             {currentBranch === (repoData.defaultBranch || 'main') ? (
-              <span className="bg-emerald-100 text-emerald-800 border border-emerald-600 px-2 py-0.5 text-[10px] font-bold flex items-center space-x-1">
-                <ShieldCheck className="w-3 h-3" />
+              <span className="bg-[#f0f9f4] text-[#059669] border border-[#a7f3d0] px-2.5 py-0.5 rounded-full text-[11px] font-bold flex items-center space-x-1">
+                <ShieldCheck className="w-3.5 h-3.5" />
                 <span>Protected Branch</span>
               </span>
             ) : (
-              <span className="bg-[#ede8dc] border border-black px-2 py-0.5 text-[10px] text-neutral-700">
-                Independent Branch Workspace
+              <span className="bg-[#f0ede6] text-[#555962] px-2.5 py-0.5 rounded-full text-[11px] font-medium font-mono">
+                Independent Contributor Branch
               </span>
             )}
           </div>
 
-          <div className="text-[11px] text-neutral-600">
-            Song ID: <code className="bg-[#ede8dc] px-1 py-0.5 border border-black">{repoData._id}</code>
+          <div className="text-[11px] text-[#8c9099] font-mono">
+            Song ID: <code className="bg-[#f0ede6] px-2 py-0.5 rounded-md text-[#3a3d44]">{repoData._id}</code>
           </div>
 
         </div>
 
       </div>
 
-      {/* Workshop Navigation Tabs */}
-      <div className="flex overflow-x-auto pb-1 gap-2 font-mono text-xs">
+      {/* Workshop Navigation Tabs as Elegant Pills */}
+      <div className="flex overflow-x-auto pb-1 gap-2 text-xs font-sans">
         {tabs.map(tab => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -205,13 +208,13 @@ export const RepositoryView = ({ repo, onBackToDashboard }) => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2.5 font-bold border-2 border-black flex items-center space-x-2 whitespace-nowrap transition-all ${
+              className={`px-4 py-2.5 font-bold rounded-full flex items-center space-x-2 whitespace-nowrap transition-all ${
                 isActive 
-                  ? 'bg-black text-[#d7ff3b] shadow-brutal-sm' 
-                  : 'bg-white text-black hover:bg-[#ede8dc]'
+                  ? 'studio-btn-primary shadow-sm' 
+                  : 'bg-white text-[#555962] hover:bg-[#ede8dc] border border-[#e4dfd6]'
               }`}
             >
-              <Icon className="w-3.5 h-3.5" />
+              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#e5a83b]' : 'text-[#7a7e85]'}`} />
               <span>{tab.label}</span>
             </button>
           );

@@ -4,6 +4,17 @@ import { Sidebar } from './components/Sidebar';
 import { TopNavbar } from './components/TopNavbar';
 import { StudioDashboard } from './components/StudioDashboard';
 import { RepositoryView } from './components/RepositoryView';
+import { 
+  SongsRepositoryView,
+  CollaborationsView,
+  ArtistsDirectoryView,
+  LikedSongsView,
+  TemplatesView,
+  SharedWithMeView,
+  StudioAnalyticsView,
+  StudioSettingsView,
+  StudioHelpView
+} from './components/StudioViews';
 import { api } from './services/api';
 
 const MainApp = () => {
@@ -114,6 +125,43 @@ const MainApp = () => {
                   repo={selectedRepo}
                   onBackToDashboard={() => setSelectedRepo(null)}
                 />
+              ) : activeNav === 'repositories' || activeNav === 'radio' ? (
+                <SongsRepositoryView 
+                  allRepos={allRepos}
+                  onOpenRepo={(r) => setSelectedRepo(r)}
+                  onOpenNewRepoModal={() => setShowCreateModal(true)}
+                />
+              ) : activeNav === 'collaborations' ? (
+                <CollaborationsView 
+                  allRepos={allRepos}
+                  onOpenRepo={(r) => setSelectedRepo(r)}
+                  onInviteModal={() => setShowInviteModal(true)}
+                />
+              ) : activeNav === 'projects' ? (
+                <ArtistsDirectoryView 
+                  allRepos={allRepos}
+                  onOpenRepo={(r) => setSelectedRepo(r)}
+                />
+              ) : activeNav === 'recently-played' || activeNav === 'liked' ? (
+                <LikedSongsView 
+                  allRepos={allRepos}
+                  onOpenRepo={(r) => setSelectedRepo(r)}
+                />
+              ) : activeNav === 'templates' ? (
+                <TemplatesView 
+                  onOpenNewRepoModal={() => setShowCreateModal(true)}
+                />
+              ) : activeNav === 'shared' ? (
+                <SharedWithMeView 
+                  allRepos={allRepos}
+                  onOpenRepo={(r) => setSelectedRepo(r)}
+                />
+              ) : activeNav === 'analytics' ? (
+                <StudioAnalyticsView />
+              ) : activeNav === 'settings' ? (
+                <StudioSettingsView />
+              ) : activeNav === 'help' ? (
+                <StudioHelpView />
               ) : (
                 <StudioDashboard 
                   allRepos={allRepos}

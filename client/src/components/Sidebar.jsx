@@ -223,16 +223,24 @@ export const Sidebar = ({
           <div className="pt-3 border-t border-[#2e3136] space-y-1">
             <button
               onClick={() => { setActiveNav('settings'); if (onClose) onClose(); }}
-              className="w-full flex items-center space-x-3 px-3 py-2 rounded-xl font-medium text-[#9ba0a9] hover:bg-[#2d3034] hover:text-white"
+              className={`w-full flex items-center space-x-3 px-3 py-2 rounded-xl font-medium transition-all ${
+                activeNav === 'settings'
+                  ? 'bg-[#393c41] text-white font-semibold shadow-sm'
+                  : 'text-[#9ba0a9] hover:bg-[#2d3034] hover:text-white'
+              }`}
             >
-              <Settings className="w-4 h-4 text-[#737882]" />
+              <Settings className={`w-4 h-4 ${activeNav === 'settings' ? 'text-[#e5a83b]' : 'text-[#737882]'}`} />
               <span>Settings</span>
             </button>
             <button
               onClick={() => { setActiveNav('help'); if (onClose) onClose(); }}
-              className="w-full flex items-center space-x-3 px-3 py-2 rounded-xl font-medium text-[#9ba0a9] hover:bg-[#2d3034] hover:text-white"
+              className={`w-full flex items-center space-x-3 px-3 py-2 rounded-xl font-medium transition-all ${
+                activeNav === 'help'
+                  ? 'bg-[#393c41] text-white font-semibold shadow-sm'
+                  : 'text-[#9ba0a9] hover:bg-[#2d3034] hover:text-white'
+              }`}
             >
-              <HelpCircle className="w-4 h-4 text-[#737882]" />
+              <HelpCircle className={`w-4 h-4 ${activeNav === 'help' ? 'text-[#e5a83b]' : 'text-[#737882]'}`} />
               <span>Help & Support</span>
             </button>
           </div>

@@ -14,7 +14,8 @@ import {
   Music,
   Clock,
   ShieldCheck,
-  Check
+  Check,
+  ChevronRight
 } from 'lucide-react';
 
 export const PullRequestWorkspace = ({ repo, currentBranch, userRole }) => {
@@ -24,9 +25,8 @@ export const PullRequestWorkspace = ({ repo, currentBranch, userRole }) => {
   const [activePR, setActivePR] = useState(null);
   const [prDetails, setPrDetails] = useState(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
-  const [filterStatus, setFilterStatus] = useState('open'); // 'open', 'merged', 'closed', 'all'
+  const [filterStatus, setFilterStatus] = useState('open');
 
-  // New PR Modal
   const [showNewPRModal, setShowNewPRModal] = useState(false);
   const [branches, setBranches] = useState([]);
   const [newPRData, setNewPRData] = useState({
@@ -37,7 +37,6 @@ export const PullRequestWorkspace = ({ repo, currentBranch, userRole }) => {
   });
   const [submittingPR, setSubmittingPR] = useState(false);
 
-  // Review & Comments
   const [reviewNote, setReviewNote] = useState('');
   const [prComments, setPrComments] = useState([]);
   const [newComment, setNewComment] = useState('');
@@ -187,16 +186,18 @@ export const PullRequestWorkspace = ({ repo, currentBranch, userRole }) => {
     <div className="space-y-6">
       
       {/* Top Action Bar */}
-      <div className="brutal-card bg-white p-4 border-2 border-black flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-white p-4 sm:p-5 rounded-3xl border border-[#e8e4dc] shadow-soft flex flex-wrap items-center justify-between gap-4">
         
         {/* Status Filters */}
-        <div className="flex items-center space-x-1 font-mono text-xs font-bold">
+        <div className="flex items-center space-x-1.5 text-xs font-sans">
           {['open', 'merged', 'closed', 'all'].map(st => (
             <button
               key={st}
               onClick={() => { setFilterStatus(st); setActivePR(null); }}
-              className={`px-3 py-1.5 border border-black uppercase ${
-                filterStatus === st ? 'bg-black text-[#d7ff3b]' : 'bg-[#faf9f5] hover:bg-[#ede8dc]'
+              className={`px-3.5 py-1.5 rounded-full uppercase font-medium transition-all ${
+                filterStatus === st 
+                  ? 'bg-[#1c1e21] text-white shadow-sm' 
+                  : 'bg-[#f5f2ec] text-[#555962] hover:bg-[#ede8dc]'
               }`}
             >
               {st}
@@ -206,9 +207,9 @@ export const PullRequestWorkspace = ({ repo, currentBranch, userRole }) => {
 
         <button
           onClick={() => setShowNewPRModal(true)}
-          className="brutal-btn brutal-btn-acid px-4 py-2 text-xs font-bold flex items-center space-x-1.5 shadow-brutal-sm"
+          className="studio-btn-amber px-4 py-2 text-xs font-bold flex items-center space-x-1.5 shadow-sm"
         >
-          <Plus className="w-3.5 h-3.5" />
+          <Plus className="w-3.5 h-3.5 stroke-[3]" />
           <span>New Pull Request</span>
         </button>
 
@@ -218,16 +219,16 @@ export const PullRequestWorkspace = ({ repo, currentBranch, userRole }) => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* Left Column: PR List */}
-        <div className="lg:col-span-5 space-y-3 font-mono text-xs">
+        <div className="lg:col-span-5 space-y-3 text-xs">
           {loading ? (
-            <div className="brutal-card p-8 text-center bg-white">
-              [SCANNING PULL REQUEST REPOSITORY...]
+            <div className="bg-white p-8 rounded-3xl border border-[#e8e4dc] text-center text-[#7a7e85] font-mono">
+              [SCANNING PULL REQUESTS...]
             </div>
           ) : prs.length === 0 ? (
-            <div className="brutal-card p-8 text-center bg-white space-y-2">
-              <GitPullRequest className="w-6 h-6 mx-auto text-neutral-400" />
-              <p className="font-bold text-sm">No {filterStatus} pull requests found.</p>
-              <p className="text-neutral-500 text-[11px]">
+            <div className="bg-white p-8 rounded-3xl border border-[#e8e4dc] text-center space-y-2 shadow-soft">
+              <GitPullRequest className="w-6 h-6 mx-auto text-[#a84c26]" />
+              <p className="font-bold text-sm text-[#1c1e21]">No {filterStatus} pull requests found.</p>
+              <p className="text-[#7a7e85] text-xs">
                 Open a new PR to propose merging lyrics or audio takes from a branch into main.
               </p>
             </div>
@@ -240,44 +241,46 @@ export const PullRequestWorkspace = ({ repo, currentBranch, userRole }) => {
                 <div
                   key={pr._id}
                   onClick={() => openPRDetails(pr)}
-                  className={`brutal-card p-4 cursor-pointer transition-all border-2 border-black space-y-2 ${
-                    isSelected ? 'bg-[#d7ff3b]' : 'bg-white hover:bg-[#faf9f5]'
+                  className={`p-4 rounded-2xl cursor-pointer transition-all border space-y-2 shadow-sm ${
+                    isSelected 
+                      ? 'bg-[#fff7ed] border-[#fed7aa] shadow-md ring-2 ring-[#a84c26]/20' 
+                      : 'bg-white border-[#e8e4dc] hover:border-[#a84c26]/40 hover:bg-[#fbfaf8]'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-black">
+                    <span className="font-bold text-[#1c1e21] font-mono">
                       #{pr.prNumber}
                     </span>
-                    <span className={`technical-badge uppercase text-[10px] ${
-                      pr.status === 'open' ? 'bg-emerald-300' :
-                      pr.status === 'merged' ? 'bg-purple-300 text-purple-950' : 'bg-neutral-300'
+                    <span className={`text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full ${
+                      pr.status === 'open' ? 'bg-[#f0f9f4] text-[#059669]' :
+                      pr.status === 'merged' ? 'bg-[#faf5ff] text-[#7c3aed]' : 'bg-[#f0ede6] text-[#555962]'
                     }`}>
                       {pr.status}
                     </span>
                   </div>
 
-                  <h4 className="font-sans font-bold text-base text-black leading-snug">
+                  <h4 className="font-sans font-bold text-base text-[#1c1e21] leading-snug">
                     {pr.title}
                   </h4>
 
-                  <div className="flex items-center space-x-1.5 text-[11px] text-neutral-600">
-                    <span className="bg-[#ede8dc] border border-black px-1.5 py-0.2 font-bold text-black">
+                  <div className="flex items-center space-x-1.5 text-xs text-[#7a7e85] font-mono">
+                    <span className="bg-[#f0ede6] px-2 py-0.5 rounded-md font-semibold text-[#1c1e21]">
                       {pr.sourceBranch}
                     </span>
                     <span>→</span>
-                    <span className="bg-[#ede8dc] border border-black px-1.5 py-0.2 font-bold text-black">
+                    <span className="bg-[#f0ede6] px-2 py-0.5 rounded-md font-semibold text-[#1c1e21]">
                       {pr.targetBranch}
                     </span>
                   </div>
 
                   {hasConflicts && (
-                    <div className="bg-red-100 border border-red-500 p-1 text-red-800 font-bold text-[10px] flex items-center space-x-1">
-                      <AlertTriangle className="w-3 h-3" />
+                    <div className="bg-red-50 border border-red-200 p-1.5 rounded-xl text-red-800 font-bold text-[10px] flex items-center space-x-1">
+                      <AlertTriangle className="w-3 h-3 text-red-600" />
                       <span>Has Unresolved Conflicts</span>
                     </div>
                   )}
 
-                  <div className="text-[10px] text-neutral-500 pt-1 border-t border-black/10 flex justify-between">
+                  <div className="text-[10px] text-[#8c9099] pt-1 border-t border-[#ece8e1] flex justify-between font-mono">
                     <span>Opened by @{pr.author?.username}</span>
                     <span>{new Date(pr.createdAt).toLocaleDateString()}</span>
                   </div>
@@ -287,72 +290,72 @@ export const PullRequestWorkspace = ({ repo, currentBranch, userRole }) => {
           )}
         </div>
 
-        {/* Right Column: Pull Request Detail Inspection */}
+        {/* Right Column: Pull Request Detail */}
         <div className="lg:col-span-7">
           {activePR ? (
-            <div className="brutal-card bg-white p-5 border-2 border-black space-y-5 font-mono text-xs">
+            <div className="bg-white p-6 rounded-3xl border border-[#e8e4dc] shadow-soft space-y-5 text-xs font-sans">
               
               {/* PR Header */}
-              <div className="border-b-2 border-black pb-4 space-y-2">
+              <div className="border-b border-[#ece8e1] pb-4 space-y-2">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <span className="bg-black text-[#d7ff3b] font-bold px-2 py-0.5 text-sm">
+                  <div className="flex items-center space-x-2 font-mono">
+                    <span className="bg-[#1c1e21] text-[#f5be57] font-bold px-2.5 py-0.5 rounded-md text-xs">
                       PR #{activePR.prNumber}
                     </span>
-                    <span className={`technical-badge uppercase font-bold text-xs ${
-                      activePR.status === 'open' ? 'bg-emerald-300' :
-                      activePR.status === 'merged' ? 'bg-purple-300' : 'bg-neutral-300'
+                    <span className={`text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full ${
+                      activePR.status === 'open' ? 'bg-[#f0f9f4] text-[#059669]' :
+                      activePR.status === 'merged' ? 'bg-[#faf5ff] text-[#7c3aed]' : 'bg-[#f0ede6] text-[#555962]'
                     }`}>
                       {activePR.status}
                     </span>
                   </div>
 
-                  <div className="text-[11px] text-neutral-500">
+                  <div className="text-[11px] text-[#8c9099] font-mono">
                     {new Date(activePR.createdAt).toLocaleString()}
                   </div>
                 </div>
 
-                <h3 className="font-sans font-bold text-2xl text-black">
+                <h3 className="font-sans font-bold text-2xl text-[#1c1e21]">
                   {activePR.title}
                 </h3>
 
-                <div className="flex items-center space-x-2 text-xs">
-                  <span>Proposing merge from</span>
-                  <span className="bg-[#ede8dc] px-2 py-0.5 border border-black font-bold">
+                <div className="flex items-center space-x-2 text-xs font-mono">
+                  <span className="text-[#7a7e85]">Merge</span>
+                  <span className="bg-[#f0ede6] px-2 py-0.5 rounded-md font-semibold text-[#1c1e21]">
                     {activePR.sourceBranch}
                   </span>
                   <span>into</span>
-                  <span className="bg-[#ede8dc] px-2 py-0.5 border border-black font-bold">
+                  <span className="bg-[#f0ede6] px-2 py-0.5 rounded-md font-semibold text-[#1c1e21]">
                     {activePR.targetBranch}
                   </span>
                 </div>
               </div>
 
               {/* Description */}
-              <div className="bg-[#faf9f5] p-3 border border-black space-y-1">
-                <span className="font-bold text-[10px] text-neutral-500 uppercase block">
+              <div className="bg-[#f8f5ee] p-4 rounded-2xl border border-[#ece8e1] space-y-1">
+                <span className="font-bold text-[10px] text-[#7a7e85] uppercase font-mono block">
                   PROPOSED CHANGES & NOTES
                 </span>
-                <p className="font-sans text-sm text-neutral-800 leading-relaxed">
+                <p className="text-sm text-[#3a3d44] leading-relaxed">
                   {activePR.description || 'No detailed description provided.'}
                 </p>
-                <div className="text-[10px] text-neutral-600 pt-1">
+                <div className="text-[10px] text-[#7a7e85] font-mono pt-1">
                   SUBMITTED BY: @{activePR.author?.username} ({activePR.author?.displayName})
                 </div>
               </div>
 
-              {/* Diff Inspection Tabs: Lyrics & Stems */}
+              {/* Diff Inspection */}
               <div className="space-y-3">
-                <div className="flex items-center justify-between font-bold border-b-2 border-black pb-1">
-                  <span>[DIFF & IMPACT ANALYSIS]</span>
+                <div className="flex items-center justify-between font-bold border-b border-[#ece8e1] pb-1.5 font-mono">
+                  <span className="text-xs text-[#1c1e21]">DIFF & IMPACT ANALYSIS</span>
                   <div className="flex items-center space-x-2 text-[10px]">
                     {prDetails?.diffSummary?.hasConflicts ? (
-                      <span className="bg-red-200 text-red-900 border border-red-600 px-1.5 py-0.5 font-bold flex items-center space-x-1">
+                      <span className="bg-red-100 text-red-800 border border-red-300 px-2 py-0.5 rounded-full font-bold flex items-center space-x-1">
                         <AlertTriangle className="w-3 h-3" />
                         <span>Conflict Detected</span>
                       </span>
                     ) : (
-                      <span className="bg-emerald-100 text-emerald-800 border border-emerald-600 px-1.5 py-0.5 font-bold flex items-center space-x-1">
+                      <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded-full font-bold flex items-center space-x-1">
                         <Check className="w-3 h-3" />
                         <span>Able to Merge Cleanly</span>
                       </span>
@@ -363,16 +366,16 @@ export const PullRequestWorkspace = ({ repo, currentBranch, userRole }) => {
                 {/* Lyrics Diff */}
                 {prDetails?.lyricsDiff && prDetails.lyricsDiff.length > 0 ? (
                   <div className="space-y-1">
-                    <span className="font-bold text-[10px] text-neutral-600">LYRICS DIFF:</span>
-                    <div className="max-h-48 overflow-y-auto border border-black font-mono text-[11px] divide-y divide-neutral-200">
+                    <span className="font-bold text-[10px] text-[#7a7e85] font-mono">LYRICS DIFF:</span>
+                    <div className="max-h-48 overflow-y-auto border border-[#e8e4dc] rounded-2xl font-mono text-[11px] divide-y divide-[#ece8e1] bg-[#fbfaf8]">
                       {prDetails.lyricsDiff.map((d, dIdx) => (
                         <div 
                           key={dIdx} 
-                          className={`p-1 flex items-start space-x-2 ${
-                            d.type === 'added' ? 'bg-emerald-100 text-emerald-950 font-medium' :
-                            d.type === 'removed' ? 'bg-red-100 text-red-950 line-through' :
-                            d.type === 'modified' ? 'bg-yellow-100 text-yellow-950 font-medium' :
-                            'bg-white text-neutral-700'
+                          className={`p-2 flex items-start space-x-2 ${
+                            d.type === 'added' ? 'bg-emerald-50 text-emerald-950 font-medium' :
+                            d.type === 'removed' ? 'bg-red-50 text-red-950 line-through' :
+                            d.type === 'modified' ? 'bg-amber-50 text-amber-950 font-medium' :
+                            'text-neutral-700'
                           }`}
                         >
                           <span className="w-4 text-center font-bold">
@@ -386,7 +389,7 @@ export const PullRequestWorkspace = ({ repo, currentBranch, userRole }) => {
                     </div>
                   </div>
                 ) : (
-                  <div className="p-2 border border-neutral-300 bg-[#faf9f5] text-neutral-600 text-[11px]">
+                  <div className="p-3 border border-[#e8e4dc] rounded-2xl bg-[#f8f6f2] text-[#7a7e85] text-xs">
                     No textual lyrics changes detected between these branches.
                   </div>
                 )}
@@ -394,80 +397,80 @@ export const PullRequestWorkspace = ({ repo, currentBranch, userRole }) => {
                 {/* Audio Stems Diff */}
                 {prDetails?.trackComparison && (
                   <div className="space-y-1 pt-1">
-                    <span className="font-bold text-[10px] text-neutral-600">AUDIO STEMS DELTA:</span>
-                    <div className="border border-black p-2 bg-white space-y-1 text-[11px]">
+                    <span className="font-bold text-[10px] text-[#7a7e85] font-mono">AUDIO STEMS DELTA:</span>
+                    <div className="border border-[#e8e4dc] rounded-2xl p-3 bg-white space-y-1 text-xs">
                       {prDetails.trackComparison.addedTracks?.length > 0 && (
                         <div>
-                          <span className="text-emerald-700 font-bold">+ New Tracks: </span>
+                          <span className="text-[#059669] font-bold">+ New Tracks: </span>
                           {prDetails.trackComparison.addedTracks.map(t => t.trackName).join(', ')}
                         </div>
                       )}
                       {prDetails.trackComparison.modifiedTracks?.length > 0 && (
                         <div>
-                          <span className="text-blue-700 font-bold">~ Modified Takes: </span>
+                          <span className="text-[#2563eb] font-bold">~ Modified Takes: </span>
                           {prDetails.trackComparison.modifiedTracks.map(t => `${t.trackName} (${t.sourceTakesCount} takes)`).join(', ')}
                         </div>
                       )}
                       {prDetails.trackComparison.addedTracks?.length === 0 && prDetails.trackComparison.modifiedTracks?.length === 0 && (
-                        <div className="text-neutral-500">Audio track configurations match.</div>
+                        <div className="text-[#7a7e85]">Audio track configurations match.</div>
                       )}
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Review Submissions & Status */}
-              <div className="border-t-2 border-black pt-3 space-y-3">
-                <span className="font-bold uppercase tracking-wider block">
-                  [COLLABORATOR REVIEWS] ({activePR.reviewers?.length || 0})
+              {/* Review Submissions */}
+              <div className="border-t border-[#ece8e1] pt-3.5 space-y-3">
+                <span className="font-bold uppercase tracking-wider block font-mono text-xs text-[#1c1e21]">
+                  COLLABORATOR REVIEWS ({activePR.reviewers?.length || 0})
                 </span>
 
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   {activePR.reviewers?.length === 0 ? (
-                    <div className="text-neutral-500 text-[11px]">
+                    <div className="text-[#7a7e85] text-xs">
                       No reviews submitted yet. Maintainers and reviewers can approve or request changes below.
                     </div>
                   ) : (
                     activePR.reviewers.map((r, idx) => (
-                      <div key={idx} className="p-2 border border-black bg-[#faf9f5] flex items-center justify-between text-xs">
+                      <div key={idx} className="p-3 rounded-2xl border border-[#e8e4dc] bg-[#f8f6f2] flex items-center justify-between text-xs">
                         <div className="flex items-center space-x-2">
                           {r.status === 'approved' ? (
                             <CheckCircle className="w-4 h-4 text-emerald-600" />
                           ) : (
                             <XCircle className="w-4 h-4 text-red-600" />
                           )}
-                          <span className="font-bold">@{r.user?.username}</span>
-                          <span className="text-neutral-600">({r.status.replace('_', ' ')})</span>
+                          <span className="font-bold text-[#1c1e21]">@{r.user?.username}</span>
+                          <span className="text-[#7a7e85]">({r.status.replace('_', ' ')})</span>
                         </div>
-                        {r.note && <span className="italic text-neutral-500 text-[11px]">"{r.note}"</span>}
+                        {r.note && <span className="italic text-[#7a7e85] text-[11px]">"{r.note}"</span>}
                       </div>
                     ))
                   )}
                 </div>
 
-                {/* Review Form if open */}
+                {/* Review Form */}
                 {activePR.status === 'open' && (
-                  <div className="bg-[#ede8dc] p-3 border border-black space-y-2">
-                    <span className="font-bold block text-[11px]">SUBMIT PEER REVIEW:</span>
+                  <div className="bg-[#f8f5ee] p-3.5 rounded-2xl border border-[#ece8e1] space-y-2.5">
+                    <span className="font-bold block text-xs text-[#1c1e21]">SUBMIT PEER REVIEW:</span>
                     <input
                       type="text"
                       value={reviewNote}
                       onChange={e => setReviewNote(e.target.value)}
                       placeholder="Feedback note (e.g. Harmonies sound balanced, timing is tight)"
-                      className="brutal-input text-xs w-full py-1.5"
+                      className="studio-input text-xs w-full"
                     />
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handleSubmitReview('approved')}
                         disabled={actionLoading}
-                        className="brutal-btn bg-emerald-400 hover:bg-emerald-300 text-black px-3 py-1 text-xs font-bold"
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors shadow-sm"
                       >
                         ✓ Approve Changes
                       </button>
                       <button
                         onClick={() => handleSubmitReview('changes_requested')}
                         disabled={actionLoading}
-                        className="brutal-btn bg-red-400 hover:bg-red-300 text-black px-3 py-1 text-xs font-bold"
+                        className="bg-red-600 hover:bg-red-700 text-white px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors shadow-sm"
                       >
                         Request Revision
                       </button>
@@ -478,16 +481,16 @@ export const PullRequestWorkspace = ({ repo, currentBranch, userRole }) => {
 
               {/* Merge Actions */}
               {activePR.status === 'open' && (
-                <div className="border-t-2 border-black pt-4 flex flex-wrap items-center justify-between gap-3">
-                  <div className="text-[11px] text-neutral-600">
-                    Target branch: <strong>{activePR.targetBranch}</strong>
+                <div className="border-t border-[#ece8e1] pt-4 flex flex-wrap items-center justify-between gap-3">
+                  <div className="text-xs text-[#7a7e85] font-mono">
+                    Target: <strong>{activePR.targetBranch}</strong>
                   </div>
 
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={handleClosePR}
                       disabled={actionLoading}
-                      className="brutal-btn bg-white hover:bg-neutral-100 px-3 py-2 text-xs font-bold"
+                      className="px-4 py-2 rounded-full border border-[#e2ded5] text-[#555962] hover:bg-[#ede8dc] text-xs font-semibold"
                     >
                       Close PR
                     </button>
@@ -495,7 +498,7 @@ export const PullRequestWorkspace = ({ repo, currentBranch, userRole }) => {
                     <button
                       onClick={handleMergePR}
                       disabled={actionLoading || prDetails?.diffSummary?.hasConflicts}
-                      className="brutal-btn brutal-btn-acid px-5 py-2 text-xs font-bold flex items-center space-x-1.5 shadow-brutal-sm"
+                      className="studio-btn-amber px-5 py-2 text-xs font-bold flex items-center space-x-1.5 shadow-copper"
                     >
                       <GitMerge className="w-4 h-4" />
                       <span>Confirm Merge into {activePR.targetBranch}</span>
@@ -505,19 +508,19 @@ export const PullRequestWorkspace = ({ repo, currentBranch, userRole }) => {
               )}
 
               {/* Discussion Thread */}
-              <div className="border-t-2 border-black pt-3 space-y-3">
-                <span className="font-bold uppercase tracking-wider block">
-                  [DISCUSSION THREAD] ({prComments.length})
+              <div className="border-t border-[#ece8e1] pt-3.5 space-y-3">
+                <span className="font-bold uppercase tracking-wider block font-mono text-xs text-[#1c1e21]">
+                  DISCUSSION THREAD ({prComments.length})
                 </span>
 
                 <div className="space-y-2 max-h-40 overflow-y-auto">
                   {prComments.map(c => (
-                    <div key={c._id} className="p-2 border border-black bg-[#faf9f5] text-xs">
-                      <div className="font-bold flex justify-between">
+                    <div key={c._id} className="p-2.5 rounded-2xl border border-[#e8e4dc] bg-[#fbfaf8] text-xs">
+                      <div className="font-bold text-[#1c1e21] flex justify-between">
                         <span>@{c.author?.username}</span>
-                        <span className="text-[10px] text-neutral-400">{new Date(c.createdAt).toLocaleTimeString()}</span>
+                        <span className="text-[10px] text-[#8c9099] font-mono">{new Date(c.createdAt).toLocaleTimeString()}</span>
                       </div>
-                      <p className="text-neutral-700 mt-1">{c.content}</p>
+                      <p className="text-[#4b4f57] mt-1">{c.content}</p>
                     </div>
                   ))}
                 </div>
@@ -528,11 +531,11 @@ export const PullRequestWorkspace = ({ repo, currentBranch, userRole }) => {
                     value={newComment}
                     onChange={e => setNewComment(e.target.value)}
                     placeholder="Leave comment on this PR..."
-                    className="brutal-input text-xs flex-1 py-1.5"
+                    className="studio-input text-xs flex-1"
                   />
                   <button
                     type="submit"
-                    className="brutal-btn brutal-btn-acid px-3 py-1.5 text-xs font-bold"
+                    className="studio-btn-primary px-4 py-1.5 text-xs font-bold"
                   >
                     Reply
                   </button>
@@ -541,7 +544,7 @@ export const PullRequestWorkspace = ({ repo, currentBranch, userRole }) => {
 
             </div>
           ) : (
-            <div className="brutal-card p-12 text-center bg-white font-mono text-xs text-neutral-500">
+            <div className="bg-white p-12 rounded-3xl border border-[#e8e4dc] text-center font-sans text-xs text-[#7a7e85] shadow-soft">
               Select any pull request on the left to review stems delta, check lyrics conflict status, approve changes, or merge into main.
             </div>
           )}
@@ -551,28 +554,28 @@ export const PullRequestWorkspace = ({ repo, currentBranch, userRole }) => {
 
       {/* New PR Modal */}
       {showNewPRModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-          <div className="brutal-card bg-white max-w-md w-full p-6 border-2 border-black space-y-4 font-mono text-xs">
-            <div className="flex items-center justify-between border-b-2 border-black pb-2">
-              <span className="font-bold uppercase tracking-wider text-black">
-                [PROPOSAL] CREATE PULL REQUEST
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white max-w-md w-full p-6 sm:p-8 rounded-3xl shadow-player border border-[#e2ded5] space-y-4 text-xs font-sans">
+            <div className="flex items-center justify-between border-b border-[#ece8e1] pb-3">
+              <span className="font-bold uppercase tracking-wider text-[#1c1e21] font-mono">
+                CREATE PULL REQUEST
               </span>
               <button 
                 onClick={() => setShowNewPRModal(false)}
-                className="font-bold hover:text-red-600"
+                className="text-neutral-500 hover:text-black font-bold p-1"
               >
                 ✕
               </button>
             </div>
 
-            <form onSubmit={handleCreatePR} className="space-y-3">
+            <form onSubmit={handleCreatePR} className="space-y-3.5">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold mb-1">SOURCE BRANCH (HEAD)</label>
+                  <label className="block font-bold mb-1">SOURCE (HEAD)</label>
                   <select
                     value={newPRData.sourceBranch}
                     onChange={e => setNewPRData({ ...newPRData, sourceBranch: e.target.value })}
-                    className="brutal-input w-full bg-white font-mono"
+                    className="studio-input w-full bg-white font-mono"
                   >
                     {branches.map(b => (
                       <option key={b.name} value={b.name}>{b.name}</option>
@@ -581,11 +584,11 @@ export const PullRequestWorkspace = ({ repo, currentBranch, userRole }) => {
                 </div>
 
                 <div>
-                  <label className="block font-bold mb-1">TARGET BRANCH (BASE)</label>
+                  <label className="block font-bold mb-1">TARGET (BASE)</label>
                   <select
                     value={newPRData.targetBranch}
                     onChange={e => setNewPRData({ ...newPRData, targetBranch: e.target.value })}
-                    className="brutal-input w-full bg-white font-mono"
+                    className="studio-input w-full bg-white font-mono"
                   >
                     {branches.map(b => (
                       <option key={b.name} value={b.name}>{b.name}</option>
@@ -602,18 +605,18 @@ export const PullRequestWorkspace = ({ repo, currentBranch, userRole }) => {
                   value={newPRData.title}
                   onChange={e => setNewPRData({ ...newPRData, title: e.target.value })}
                   placeholder="e.g. Add backing vocal harmonies to Chorus"
-                  className="brutal-input w-full"
+                  className="studio-input w-full"
                 />
               </div>
 
               <div>
-                <label className="block font-bold mb-1">DESCRIPTION & MOTIVATION</label>
+                <label className="block font-bold mb-1">DESCRIPTION</label>
                 <textarea
                   rows={3}
                   value={newPRData.description}
                   onChange={e => setNewPRData({ ...newPRData, description: e.target.value })}
                   placeholder="Explain what was recorded or edited..."
-                  className="brutal-input w-full"
+                  className="studio-input w-full"
                 />
               </div>
 
@@ -621,7 +624,7 @@ export const PullRequestWorkspace = ({ repo, currentBranch, userRole }) => {
                 <button
                   type="submit"
                   disabled={submittingPR}
-                  className="brutal-btn brutal-btn-acid w-full py-2.5 font-bold shadow-brutal text-sm"
+                  className="studio-btn-amber w-full py-2.5 font-bold shadow-copper text-sm"
                 >
                   {submittingPR ? 'COMPUTING DIFF & OPENING...' : 'OPEN PULL REQUEST'}
                 </button>

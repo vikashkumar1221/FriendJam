@@ -20,7 +20,6 @@ export const CollaboratorSettings = ({ repo, onRepoUpdated, userRole }) => {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // Repo Settings form
   const [repoSettings, setRepoSettings] = useState({
     name: repo.name || '',
     description: repo.description || '',
@@ -34,7 +33,6 @@ export const CollaboratorSettings = ({ repo, onRepoUpdated, userRole }) => {
   });
   const [savingSettings, setSavingSettings] = useState(false);
 
-  // Invite Member state
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [inviteUsername, setInviteUsername] = useState('');
   const [inviteRole, setInviteRole] = useState('contributor');
@@ -106,24 +104,24 @@ export const CollaboratorSettings = ({ repo, onRepoUpdated, userRole }) => {
   const isOwnerOrMaintainer = userRole === 'owner' || userRole === 'maintainer';
 
   return (
-    <div className="space-y-8 font-mono text-xs">
+    <div className="space-y-8 text-xs font-sans">
       
       {/* Collaborators & Access Control */}
-      <div className="brutal-card bg-white p-5 border-2 border-black space-y-4">
-        <div className="flex items-center justify-between border-b-2 border-black pb-3">
+      <div className="bg-white p-6 sm:p-7 rounded-3xl border border-[#e8e4dc] shadow-soft space-y-4">
+        <div className="flex items-center justify-between border-b border-[#ece8e1] pb-3">
           <div>
-            <span className="font-bold uppercase tracking-wider text-black block">
-              [ACCESS CONTROL] BAND MEMBERS & ROLES
+            <span className="font-bold uppercase tracking-wider text-[#1c1e21] block font-mono">
+              COLLABORATOR ACCESS CONTROL
             </span>
-            <span className="text-[10px] text-neutral-500">
-              Role permissions: Owner &rarr; Maintainer &rarr; Contributor &rarr; Reviewer &rarr; Viewer
+            <span className="text-[11px] text-[#7a7e85]">
+              Role hierarchy: Owner &rarr; Maintainer &rarr; Contributor &rarr; Reviewer &rarr; Viewer
             </span>
           </div>
 
           {isOwnerOrMaintainer && (
             <button
               onClick={() => setShowInviteModal(true)}
-              className="brutal-btn brutal-btn-acid px-3 py-1.5 font-bold flex items-center space-x-1"
+              className="studio-btn-amber px-4 py-1.5 font-bold flex items-center space-x-1 shadow-sm"
             >
               <UserPlus className="w-3.5 h-3.5" />
               <span>Invite Collaborator</span>
@@ -132,50 +130,50 @@ export const CollaboratorSettings = ({ repo, onRepoUpdated, userRole }) => {
         </div>
 
         {/* Member list */}
-        <div className="space-y-2">
-          {/* Repository Owner Card */}
-          <div className="p-3 border-2 border-black bg-[#ede8dc] flex items-center justify-between">
+        <div className="space-y-2.5">
+          {/* Owner Card */}
+          <div className="p-3.5 rounded-2xl bg-[#fff7ed] border border-[#fed7aa] flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-black text-[#d7ff3b] font-bold flex items-center justify-center border border-black">
+              <div className="w-9 h-9 rounded-full bg-[#a84c26] text-white font-bold flex items-center justify-center shadow-sm">
                 {repo.owner?.username?.[0]?.toUpperCase() || 'O'}
               </div>
               <div>
-                <div className="font-bold text-sm text-black">
+                <div className="font-bold text-sm text-[#1c1e21]">
                   @{repo.owner?.username || 'vikash'} ({repo.owner?.displayName || 'Owner'})
                 </div>
-                <div className="text-[10px] text-neutral-600">
+                <div className="text-[11px] text-[#7a7e85]">
                   {repo.owner?.primaryRole || 'Songwriter & Producer'}
                 </div>
               </div>
             </div>
 
-            <span className="technical-badge bg-black text-[#d7ff3b] font-bold">
+            <span className="bg-[#a84c26] text-white px-3 py-0.5 rounded-full text-[10px] font-bold font-mono uppercase shadow-copper">
               OWNER (ROOT)
             </span>
           </div>
 
           {/* Invited Members */}
           {members.map(m => (
-            <div key={m._id} className="p-3 border-2 border-black bg-white flex items-center justify-between hover:bg-[#faf9f5]">
+            <div key={m._id} className="p-3.5 rounded-2xl border border-[#e8e4dc] bg-white flex items-center justify-between hover:bg-[#fbfaf8] transition-colors">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-[#faf9f5] border border-black font-bold flex items-center justify-center">
+                <div className="w-9 h-9 rounded-full bg-[#f3efe9] text-[#1c1e21] font-bold flex items-center justify-center border border-[#e2ded5]">
                   {m.user?.username?.[0]?.toUpperCase() || 'M'}
                 </div>
                 <div>
-                  <div className="font-bold text-sm text-black">
+                  <div className="font-bold text-sm text-[#1c1e21]">
                     @{m.user?.username} ({m.user?.displayName})
                   </div>
-                  <div className="text-[10px] text-neutral-600">
+                  <div className="text-[11px] text-[#7a7e85]">
                     Role in song: <strong>{m.instrumentRole}</strong>
                   </div>
                 </div>
               </div>
 
               <div className="flex items-center space-x-3">
-                <span className={`technical-badge uppercase ${
-                  m.role === 'maintainer' ? 'bg-[#d7ff3b]' :
-                  m.role === 'contributor' ? 'bg-cyan-200' :
-                  m.role === 'reviewer' ? 'bg-purple-200' : 'bg-[#ede8dc]'
+                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase ${
+                  m.role === 'maintainer' ? 'bg-[#ffedd5] text-[#9a3412]' :
+                  m.role === 'contributor' ? 'bg-[#eff6ff] text-[#2563eb]' :
+                  m.role === 'reviewer' ? 'bg-[#faf5ff] text-[#7c3aed]' : 'bg-[#f0ede6] text-[#555962]'
                 }`}>
                   {m.role}
                 </span>
@@ -183,10 +181,10 @@ export const CollaboratorSettings = ({ repo, onRepoUpdated, userRole }) => {
                 {isOwnerOrMaintainer && (
                   <button
                     onClick={() => handleRemoveMember(m.user?._id)}
-                    className="hover:text-red-700 text-neutral-400 p-1"
+                    className="hover:text-red-700 text-[#a0a4ad] p-1.5 transition-colors"
                     title="Remove access"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 )}
               </div>
@@ -196,10 +194,10 @@ export const CollaboratorSettings = ({ repo, onRepoUpdated, userRole }) => {
       </div>
 
       {/* Musical Properties & Settings Form */}
-      <div className="brutal-card bg-white p-5 border-2 border-black space-y-4">
-        <div className="border-b-2 border-black pb-3">
-          <span className="font-bold uppercase tracking-wider text-black block">
-            [REVISION PARAMETERS] SONG METADATA & REPO SETTINGS
+      <div className="bg-white p-6 sm:p-7 rounded-3xl border border-[#e8e4dc] shadow-soft space-y-4">
+        <div className="border-b border-[#ece8e1] pb-3">
+          <span className="font-bold uppercase tracking-wider text-[#1c1e21] block font-mono">
+            SONG METADATA & PARAMETERS
           </span>
         </div>
 
@@ -212,7 +210,7 @@ export const CollaboratorSettings = ({ repo, onRepoUpdated, userRole }) => {
                 disabled={!isOwnerOrMaintainer}
                 value={repoSettings.name}
                 onChange={e => setRepoSettings({ ...repoSettings, name: e.target.value })}
-                className="brutal-input w-full"
+                className="studio-input w-full"
               />
             </div>
 
@@ -223,7 +221,7 @@ export const CollaboratorSettings = ({ repo, onRepoUpdated, userRole }) => {
                 disabled={!isOwnerOrMaintainer}
                 value={repoSettings.genre}
                 onChange={e => setRepoSettings({ ...repoSettings, genre: e.target.value })}
-                className="brutal-input w-full"
+                className="studio-input w-full"
               />
             </div>
           </div>
@@ -235,19 +233,19 @@ export const CollaboratorSettings = ({ repo, onRepoUpdated, userRole }) => {
               disabled={!isOwnerOrMaintainer}
               value={repoSettings.description}
               onChange={e => setRepoSettings({ ...repoSettings, description: e.target.value })}
-              className="brutal-input w-full"
+              className="studio-input w-full"
             />
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <label className="block font-bold mb-1">BPM (TEMPO)</label>
+              <label className="block font-bold mb-1">TEMPO (BPM)</label>
               <input
                 type="number"
                 disabled={!isOwnerOrMaintainer}
                 value={repoSettings.bpm}
                 onChange={e => setRepoSettings({ ...repoSettings, bpm: Number(e.target.value) })}
-                className="brutal-input w-full"
+                className="studio-input w-full font-mono text-xs"
               />
             </div>
 
@@ -258,7 +256,7 @@ export const CollaboratorSettings = ({ repo, onRepoUpdated, userRole }) => {
                 disabled={!isOwnerOrMaintainer}
                 value={repoSettings.keySignature}
                 onChange={e => setRepoSettings({ ...repoSettings, keySignature: e.target.value })}
-                className="brutal-input w-full"
+                className="studio-input w-full font-mono text-xs"
               />
             </div>
 
@@ -269,7 +267,7 @@ export const CollaboratorSettings = ({ repo, onRepoUpdated, userRole }) => {
                 disabled={!isOwnerOrMaintainer}
                 value={repoSettings.timeSignature}
                 onChange={e => setRepoSettings({ ...repoSettings, timeSignature: e.target.value })}
-                className="brutal-input w-full"
+                className="studio-input w-full font-mono text-xs"
               />
             </div>
 
@@ -279,7 +277,7 @@ export const CollaboratorSettings = ({ repo, onRepoUpdated, userRole }) => {
                 disabled={!isOwnerOrMaintainer}
                 value={repoSettings.status}
                 onChange={e => setRepoSettings({ ...repoSettings, status: e.target.value })}
-                className="brutal-input w-full bg-white font-mono"
+                className="studio-input w-full bg-white font-mono text-xs"
               >
                 <option value="Idea / Jam">Idea / Jam</option>
                 <option value="Tracking">Tracking</option>
@@ -296,7 +294,7 @@ export const CollaboratorSettings = ({ repo, onRepoUpdated, userRole }) => {
               <button
                 type="submit"
                 disabled={savingSettings}
-                className="brutal-btn brutal-btn-acid px-5 py-2.5 font-bold shadow-brutal text-sm"
+                className="studio-btn-amber px-6 py-2.5 font-bold shadow-copper text-sm"
               >
                 {savingSettings ? 'SAVING CONFIGURATION...' : 'SAVE REPOSITORY CONFIGURATION'}
               </button>
@@ -307,21 +305,21 @@ export const CollaboratorSettings = ({ repo, onRepoUpdated, userRole }) => {
 
       {/* Invite Member Modal */}
       {showInviteModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-          <div className="brutal-card bg-white max-w-md w-full p-6 border-2 border-black space-y-4 font-mono text-xs">
-            <div className="flex items-center justify-between border-b-2 border-black pb-2">
-              <span className="font-bold uppercase tracking-wider text-black">
-                [INVITATION] ADD BAND COLLABORATOR
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white max-w-md w-full p-6 sm:p-8 rounded-3xl shadow-player border border-[#e2ded5] space-y-4 text-xs font-sans">
+            <div className="flex items-center justify-between border-b border-[#ece8e1] pb-3">
+              <span className="font-bold uppercase tracking-wider text-[#1c1e21] font-mono">
+                ADD BAND COLLABORATOR
               </span>
               <button 
                 onClick={() => setShowInviteModal(false)}
-                className="font-bold hover:text-red-600"
+                className="text-neutral-500 hover:text-black font-bold p-1"
               >
                 ✕
               </button>
             </div>
 
-            <form onSubmit={handleInvite} className="space-y-3">
+            <form onSubmit={handleInvite} className="space-y-3.5">
               <div>
                 <label className="block font-bold mb-1">USERNAME OR EMAIL *</label>
                 <input
@@ -330,7 +328,7 @@ export const CollaboratorSettings = ({ repo, onRepoUpdated, userRole }) => {
                   value={inviteUsername}
                   onChange={e => setInviteUsername(e.target.value)}
                   placeholder="e.g. maya-vocals or maya@musiccollab.io"
-                  className="brutal-input w-full"
+                  className="studio-input w-full"
                 />
               </div>
 
@@ -339,7 +337,7 @@ export const CollaboratorSettings = ({ repo, onRepoUpdated, userRole }) => {
                 <select
                   value={inviteRole}
                   onChange={e => setInviteRole(e.target.value)}
-                  className="brutal-input w-full bg-white font-mono"
+                  className="studio-input w-full bg-white"
                 >
                   <option value="maintainer">Maintainer (Can merge PRs & manage members)</option>
                   <option value="contributor">Contributor (Can branch, record takes, commit lyrics)</option>
@@ -355,7 +353,7 @@ export const CollaboratorSettings = ({ repo, onRepoUpdated, userRole }) => {
                   value={inviteInstrument}
                   onChange={e => setInviteInstrument(e.target.value)}
                   placeholder="e.g. Lead Vocals, Acoustic Guitar, Mixing Engineer"
-                  className="brutal-input w-full"
+                  className="studio-input w-full"
                 />
               </div>
 
@@ -363,7 +361,7 @@ export const CollaboratorSettings = ({ repo, onRepoUpdated, userRole }) => {
                 <button
                   type="submit"
                   disabled={inviting}
-                  className="brutal-btn brutal-btn-acid w-full py-2.5 font-bold shadow-brutal text-sm"
+                  className="studio-btn-amber w-full py-2.5 font-bold shadow-copper text-sm"
                 >
                   {inviting ? 'SENDING INVITATION...' : 'ADD COLLABORATOR NOW'}
                 </button>
