@@ -1,7 +1,7 @@
 {
-  "name": "musiccollab",
+  "name": "friendjam",
   "version": "1.0.0",
-  "description": "MusicCollab — GitHub for Musicians with Human-Made Neo-Brutalist UI",
+  "description": "FriendJam — GitHub for Musicians",
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",

@@ -77,7 +77,7 @@ app.use('/api/notifications', notificationRoutes);
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'online',
-    app: 'MusicCollab — GitHub for Musicians',
+    app: 'FriendJam — GitHub for Musicians',
     timestamp: new Date().toISOString()
   });
 });
@@ -130,7 +130,7 @@ async function startServer() {
 
     server.listen(PORT, () => {
       console.log(`====================================================`);
-      console.log(`🎵 MusicCollab API running on http://localhost:${PORT}`);
+      console.log(`🎵 FriendJam API running on http://localhost:${PORT}`);
       console.log(`   Audio uploads directory: ${UPLOADS_DIR}`);
       console.log(`====================================================`);
     });

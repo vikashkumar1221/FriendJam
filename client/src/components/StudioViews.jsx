@@ -680,7 +680,7 @@ export const StudioHelpView = () => {
             <span>1. What is Branching in Music?</span>
           </h3>
           <p className="text-xs sm:text-sm text-[#4b4f57] leading-relaxed">
-            In MusicCollab, the <code>main</code> branch represents the official, approved mix of your song. When a singer wants to record an alternative hook or a guitarist wants to experiment with a solo, they create an isolated branch (e.g. <code>vocals/singer-name</code>). Their recordings never overwrite or disturb <code>main</code> until a pull request is submitted and approved.
+            In FriendJam, the <code>main</code> branch represents the official, approved mix of your song. When a singer wants to record an alternative hook or a guitarist wants to experiment with a solo, they create an isolated branch (e.g. <code>vocals/singer-name</code>). Their recordings never overwrite or disturb <code>main</code> until a pull request is submitted and approved.
           </p>
         </div>
 
@@ -700,7 +700,7 @@ export const StudioHelpView = () => {
             <span>3. Resolving Lyrics Conflicts</span>
           </h3>
           <p className="text-xs sm:text-sm text-[#4b4f57] leading-relaxed">
-            If two songwriters edit different lines (e.g. one edits Verse 1 and another writes Verse 2), MusicCollab automatically 3-way merges both changes without conflict. If both songwriters edit the exact same line simultaneously, our interactive side-by-side conflict resolver shows both versions and lets you choose or combine them without losing words.
+            If two songwriters edit different lines (e.g. one edits Verse 1 and another writes Verse 2), FriendJam automatically 3-way merges both changes without conflict. If both songwriters edit the exact same line simultaneously, our interactive side-by-side conflict resolver shows both versions and lets you choose or combine them without losing words.
           </p>
         </div>
 

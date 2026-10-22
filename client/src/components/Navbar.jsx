@@ -69,14 +69,14 @@ export const Navbar = ({ currentRepo, currentBranch, onSelectBranch, onNavigateH
             className="flex items-center space-x-2 text-left group"
           >
             <div className="w-8 h-8 bg-[#111] border-2 border-black flex items-center justify-center text-[#d7ff3b] font-mono font-bold text-sm shadow-brutal-sm group-hover:bg-[#d7ff3b] group-hover:text-black transition-colors">
-              MC
+              FJ
             </div>
             <div className="hidden sm:block">
               <span className="font-mono text-xs font-bold uppercase tracking-widest text-neutral-600 block leading-tight">
                 DIGITAL WORKSHOP
               </span>
               <span className="font-bold text-base tracking-tight text-black block leading-tight">
-                MusicCollab
+                FriendJam
               </span>
             </div>
           </button>

@@ -1,400 +1,492 @@
-export { AuthPage as LandingPage } from './AuthPage';
-export { AuthPage } from './AuthPage';
+import React, { useState } from 'react';
+import { 
+  ArrowRight, 
+  ArrowUpRight, 
+  Users, 
+  Music, 
+  Layers, 
+  Search, 
+  Menu, 
+  X 
+} from 'lucide-react';
 
-  const { login, register, switchDemoAccount } = useAuth();
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'
-  const [formData, setFormData] = useState({
-    login: 'vikash',
-    password: 'Password123!',
-    username: '',
-    email: '',
-    displayName: '',
-    primaryRole: 'Songwriter / Producer'
-  });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+export const LandingPage = ({ onNavigate }) => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      if (authMode === 'login') {
-        await login(formData.login, formData.password);
-      } else {
-        await register({
-          username: formData.username,
-          email: formData.email,
-          password: formData.password,
-          displayName: formData.displayName,
-          primaryRole: formData.primaryRole
-        });
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+  const navigateTo = (path) => {
+    setMobileMenuOpen(false);
+    if (onNavigate) {
+      onNavigate(path);
+    } else {
+      window.location.href = path;
     }
   };
 
+  const communityAvatars = [
+    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&h=120&q=80',
+    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&h=120&q=80',
+    'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&h=120&q=80',
+    'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=120&h=120&q=80',
+  ];
+
+  const featuredArtists = [
+    {
+      name: 'Arjun Mehta',
+      role: 'Producer • Guitarist',
+      genre: 'Indie Folk / Rock',
+      image: '/images/arjun.jpg',
+      fallbackImage: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+      name: 'Neha Sharma',
+      role: 'Vocalist • Songwriter',
+      genre: 'Pop / Soul',
+      image: '/images/neha.jpg',
+      fallbackImage: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+      name: 'Rohan Verma',
+      role: 'Beatmaker • Producer',
+      genre: 'Synthwave / Lo-Fi',
+      image: '/images/rohan.jpg',
+      fallbackImage: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=800&q=80'
+    }
+  ];
+
+  const filteredArtists = featuredArtists.filter(artist =>
+    artist.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    artist.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    artist.genre.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className="min-h-screen bg-[#f5f3ec] text-[#111111]">
+    <div className="min-h-screen bg-white text-[#111111] font-sans antialiased selection:bg-[#20c9b0] selection:text-white">
       
-      {/* Top Banner */}
-      <div className="bg-[#111111] text-[#faf9f5] px-4 py-2 border-b-2 border-black text-center font-mono text-xs flex items-center justify-center space-x-2">
-        <span className="bg-[#d7ff3b] text-black px-1.5 py-0.5 font-bold uppercase text-[10px]">NEW</span>
-        <span>MUSICCOLLAB v1.0 — GitHub for Songwriters, Singers, Guitarists & Audio Engineers</span>
-      </div>
-
-      {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-20 border-b-2 border-black">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      {/* ========================================================================= */}
+      {/* 1. NAVBAR (Exact match to screenshot)                                      */}
+      {/* ========================================================================= */}
+      <header className="w-full bg-white border-b border-[#eaebed] sticky top-0 z-40">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-8 h-[68px] flex items-center justify-between">
           
-          <div className="lg:col-span-7 space-y-6">
-            <div className="inline-flex items-center space-x-2 border-2 border-black bg-white px-3 py-1 font-mono text-xs shadow-brutal-sm">
-              <span className="w-2 h-2 rounded-full bg-[#d7ff3b] border border-black"></span>
-              <span className="font-bold uppercase tracking-wider">VERSION CONTROL SPECIFICALLY FOR MUSIC</span>
-            </div>
-
-            <h1 className="text-5xl sm:text-7xl font-bold tracking-tight font-sans leading-[1.05]">
-              Every song <br />
-              <span className="font-editorial italic font-normal text-6xl sm:text-8xl">has a history.</span>
-            </h1>
-
-            <p className="text-lg sm:text-xl text-neutral-800 max-w-xl leading-relaxed font-sans">
-              Collaborate on lyrics, vocal harmonies, guitar riffs, and drum takes without accidentally overwriting or losing each other's work. True branching, atomic commits, stem diffs, and conflict handling for musicians.
-            </p>
-
-            {/* Call To Actions */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
-              <button
-                onClick={() => {
-                  setAuthMode('login');
-                  setFormData({ login: 'vikash', password: 'Password123!' });
-                  setShowAuthModal(true);
-                }}
-                className="brutal-btn brutal-btn-acid px-6 py-3.5 text-base font-bold flex items-center space-x-2 shadow-brutal"
-              >
-                <span>Launch Studio Workspace</span>
-                <ArrowRight className="w-5 h-5" />
-              </button>
-
-              <button
-                onClick={async () => {
-                  await switchDemoAccount('vikash');
-                  if (onExploreDemo) onExploreDemo();
-                }}
-                className="brutal-btn bg-white px-6 py-3.5 text-base font-mono font-bold flex items-center space-x-2"
-              >
-                <span>Explore "Adhoori-Kahani" Demo</span>
-              </button>
-            </div>
-
-            {/* Hand-crafted note */}
-            <div className="pt-2 flex items-center space-x-2 text-xs font-mono text-neutral-600">
-              <span className="bg-[#ede8dc] border border-black px-1.5 py-0.5 font-bold">[00] SPEC</span>
-              <span>No dummy placeholders. Real multi-track audio playback & immutable Git commits.</span>
-            </div>
-          </div>
-
-          {/* Interactive Workshop Visualizer */}
-          <div className="lg:col-span-5">
-            <div className="brutal-card bg-white p-5 border-2 border-black space-y-4">
-              <div className="flex items-center justify-between border-b-2 border-black pb-3">
-                <div className="flex items-center space-x-2 font-mono text-xs font-bold">
-                  <span className="w-3 h-3 bg-red-500 border border-black inline-block"></span>
-                  <span className="w-3 h-3 bg-yellow-400 border border-black inline-block"></span>
-                  <span className="w-3 h-3 bg-green-500 border border-black inline-block"></span>
-                  <span className="ml-2">git-music graph</span>
-                </div>
-                <span className="technical-badge bg-[#ede8dc]">BRANCH: main</span>
-              </div>
-
-              {/* Branch Diagram */}
-              <div className="font-mono text-xs space-y-3 bg-[#faf9f5] p-3 border border-black">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full bg-black"></div>
-                  <span className="font-bold text-black">[commit: a47b192]</span>
-                  <span className="text-neutral-600 truncate">Initial song arrangement</span>
-                </div>
-                <div className="pl-1.5 border-l-2 border-black ml-1.5 py-1 space-y-2">
-                  <div className="flex items-center space-x-2 text-emerald-800">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    <span className="font-bold">branch: vocals/maya-harmonies</span>
-                    <span className="bg-[#d7ff3b] text-black px-1 text-[10px] border border-black">PR #1 OPEN</span>
-                  </div>
-                  <div className="flex items-center space-x-2 text-blue-800">
-                    <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                    <span className="font-bold">branch: guitar/ambient-textures</span>
-                    <span className="text-[10px] text-neutral-500">2 commits ahead</span>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full bg-black"></div>
-                  <span className="font-bold text-black">[commit: b82e910]</span>
-                  <span className="text-neutral-600 truncate">Added rhythm stems (Acoustic + Bass)</span>
-                </div>
-              </div>
-
-              {/* Stem Matrix Preview */}
-              <div className="border border-black p-3 bg-white space-y-2">
-                <div className="flex justify-between items-center text-xs font-mono font-bold">
-                  <span>STEM MATRIX</span>
-                  <span className="text-[#0055ff]">4 ACTIVE TRACKS</span>
-                </div>
-
-                <div className="space-y-1.5">
-                  {[
-                    { name: 'Lead Vocals', take: 'Take 01 (Dry Verse)', color: 'bg-[#d7ff3b]' },
-                    { name: 'Acoustic Guitar', take: 'Take 01 (Fingerpicked Martin)', color: 'bg-orange-300' },
-                    { name: 'Sub Bass', take: 'Take 01 (Precision DI)', color: 'bg-cyan-300' },
-                    { name: 'Acoustic Drums', take: 'Take 01 (Rim-click & Kick)', color: 'bg-purple-300' }
-                  ].map((s, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-1.5 border border-black text-xs font-mono bg-[#faf9f5]">
-                      <div className="flex items-center space-x-2">
-                        <span className={`w-2.5 h-2.5 border border-black ${s.color}`}></span>
-                        <span className="font-bold">{s.name}</span>
-                      </div>
-                      <span className="text-[10px] text-neutral-600">{s.take}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* Feature Pillars in Brutalist Workshop Style */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16 border-b-2 border-black">
-        <div className="mb-10">
-          <span className="font-mono text-xs font-bold uppercase tracking-wider text-neutral-600 bg-[#ede8dc] border border-black px-2 py-0.5">
-            [01] SYSTEM ARCHITECTURE
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mt-2">
-            Why Musicians Need Version Control, Not Google Drive.
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          
-          <div className="brutal-card p-6 bg-white space-y-3">
-            <div className="w-10 h-10 border-2 border-black bg-[#d7ff3b] flex items-center justify-center font-bold text-black shadow-brutal-sm">
-              <GitBranch className="w-5 h-5" />
-            </div>
-            <h3 className="text-xl font-bold font-sans">Non-Destructive Branching</h3>
-            <p className="text-sm text-neutral-700 leading-relaxed font-sans">
-              Singers record on <code className="bg-[#ede8dc] px-1 font-mono text-xs">vocals/maya</code>. Guitarists track on <code className="bg-[#ede8dc] px-1 font-mono text-xs">guitar/solo</code>. The approved <code className="bg-[#ede8dc] px-1 font-mono text-xs">main</code> branch stays sacred until reviewed and merged.
-            </p>
-          </div>
-
-          <div className="brutal-card p-6 bg-white space-y-3">
-            <div className="w-10 h-10 border-2 border-black bg-orange-400 flex items-center justify-center font-bold text-black shadow-brutal-sm">
-              <FileText className="w-5 h-5" />
-            </div>
-            <h3 className="text-xl font-bold font-sans">Conflict Detection for Lyrics</h3>
-            <p className="text-sm text-neutral-700 leading-relaxed font-sans">
-              If two songwriters edit different lines, changes merge cleanly. If both edit the exact same chorus line simultaneously, MusicCollab shows both versions side-by-side. Never silently overwritten.
-            </p>
-          </div>
-
-          <div className="brutal-card p-6 bg-white space-y-3">
-            <div className="w-10 h-10 border-2 border-black bg-cyan-300 flex items-center justify-center font-bold text-black shadow-brutal-sm">
-              <Undo2 className="w-5 h-5" />
-            </div>
-            <h3 className="text-xl font-bold font-sans">Take Vault & Instant Restore</h3>
-            <p className="text-sm text-neutral-700 leading-relaxed font-sans">
-              Every take ever recorded has a permanent hash and waveform preview. Revert a commit, restore an older take from 3 weeks ago, or retrieve soft-deleted stems from the trash bin in 1 click.
-            </p>
-          </div>
-
-        </div>
-      </section>
-
-      {/* Audio Workspace Preview Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
-        <div className="brutal-card bg-[#111111] text-[#faf9f5] p-6 sm:p-10 border-2 border-black">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-2 border-neutral-700 pb-6 mb-8 gap-4">
-            <div>
-              <span className="font-mono text-xs font-bold text-[#d7ff3b] uppercase tracking-wider block">
-                [02] MULTITRACK AUDIO ENGINE
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mt-1">
-                Listen, Solo, Mute, and Comment on Exact Milliseconds.
-              </h2>
-            </div>
-            <button
-              onClick={async () => {
-                await switchDemoAccount('vikash');
-                if (onExploreDemo) onExploreDemo();
-              }}
-              className="brutal-btn brutal-btn-acid px-5 py-2.5 text-sm font-bold flex items-center space-x-2 self-start"
+          {/* Left: Brand Logo & Wordmark */}
+          <div className="flex items-center space-x-10">
+            <button 
+              onClick={() => navigateTo('/')}
+              className="flex items-center space-x-2 text-left cursor-pointer group"
             >
-              <span>Test Audio Workspace</span>
-              <ArrowRight className="w-4 h-4" />
+              {/* Waveform Bar Icon matching screenshot */}
+              <div className="flex items-center space-x-[2.5px] h-5">
+                <span className="w-[3px] h-3 bg-black rounded-full" />
+                <span className="w-[3px] h-5 bg-black rounded-full" />
+                <span className="w-[3px] h-3.5 bg-black rounded-full" />
+                <span className="w-[3px] h-4.5 bg-black rounded-full" />
+              </div>
+              <span className="text-lg font-bold tracking-tight text-black font-sans">
+                MusicCollab
+              </span>
+            </button>
+
+            {/* Center Navigation Links */}
+            <nav className="hidden md:flex items-center space-x-7">
+              <a 
+                href="#how-it-works" 
+                className="text-[13px] font-medium text-neutral-600 hover:text-black transition-colors"
+              >
+                Discover
+              </a>
+              <a 
+                href="#how-it-works" 
+                className="text-[13px] font-medium text-neutral-600 hover:text-black transition-colors"
+              >
+                How it works
+              </a>
+              <a 
+                href="#featured-artists" 
+                className="text-[13px] font-medium text-neutral-600 hover:text-black transition-colors"
+              >
+                For Artists
+              </a>
+              <a 
+                href="#featured-artists" 
+                className="text-[13px] font-medium text-neutral-600 hover:text-black transition-colors"
+              >
+                Community
+              </a>
+            </nav>
+          </div>
+
+          {/* Right Controls */}
+          <div className="hidden md:flex items-center space-x-5">
+            <button
+              onClick={() => setSearchModalOpen(true)}
+              className="p-1.5 text-neutral-600 hover:text-black transition-colors cursor-pointer"
+              title="Search"
+            >
+              <Search className="w-4 h-4 stroke-[2]" />
+            </button>
+
+            <button
+              onClick={() => navigateTo('/login')}
+              className="text-[13px] font-medium text-neutral-800 hover:text-black transition-colors cursor-pointer"
+            >
+              Log in
+            </button>
+
+            <button
+              onClick={() => navigateTo('/signup')}
+              className="bg-[#20c9b0] hover:bg-[#1db8a4] active:scale-[0.98] text-white font-medium text-[13px] px-5 py-2 rounded-full transition-all cursor-pointer shadow-sm"
+            >
+              Get Started
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 font-mono text-xs">
-            <div className="border border-neutral-700 p-4 bg-[#1a1a1a]">
-              <span className="text-[#d7ff3b] font-bold block mb-1">01 / MULTITRACK SYNC</span>
-              <p className="text-neutral-400">Synchronized Web Audio API playback of all stem takes simultaneously.</p>
+          {/* Mobile menu toggle */}
+          <div className="flex md:hidden items-center space-x-3">
+            <button
+              onClick={() => setSearchModalOpen(true)}
+              className="p-1 text-neutral-700"
+            >
+              <Search className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-1 text-neutral-800"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
+
+        </div>
+
+        {/* Mobile dropdown */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-b border-neutral-200 bg-white px-6 py-4 space-y-3 shadow-md">
+            <a 
+              href="#how-it-works" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm text-neutral-700 font-medium py-1"
+            >
+              Discover
+            </a>
+            <a 
+              href="#how-it-works" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm text-neutral-700 font-medium py-1"
+            >
+              How it works
+            </a>
+            <a 
+              href="#featured-artists" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm text-neutral-700 font-medium py-1"
+            >
+              For Artists
+            </a>
+            <a 
+              href="#featured-artists" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-sm text-neutral-700 font-medium py-1"
+            >
+              Community
+            </a>
+            <div className="pt-2 border-t border-neutral-100 flex items-center space-x-3">
+              <button
+                onClick={() => navigateTo('/login')}
+                className="flex-1 py-2 text-center text-xs font-semibold border border-neutral-300 rounded-full text-neutral-800"
+              >
+                Log in
+              </button>
+              <button
+                onClick={() => navigateTo('/signup')}
+                className="flex-1 py-2 text-center text-xs font-semibold bg-[#20c9b0] text-white rounded-full"
+              >
+                Get Started
+              </button>
             </div>
-            <div className="border border-neutral-700 p-4 bg-[#1a1a1a]">
-              <span className="text-[#d7ff3b] font-bold block mb-1">02 / WAVEFORM SCRUBBING</span>
-              <p className="text-neutral-400">Interactive waveform peaks with draggable playhead and timecode readout.</p>
+          </div>
+        )}
+      </header>
+
+      {/* ========================================================================= */}
+      {/* 2. HERO SECTION (Split Layout)                                            */}
+      {/* ========================================================================= */}
+      <section className="max-w-[1240px] mx-auto px-4 sm:px-8 pt-8 sm:pt-10 pb-8 sm:pb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+          
+          {/* Left Hero Column */}
+          <div className="lg:col-span-5 space-y-5">
+            
+            {/* Headline */}
+            <h1 className="text-4xl sm:text-5xl lg:text-[54px] xl:text-[58px] font-extrabold tracking-tight text-[#111111] leading-[1.06]">
+              Make music <br />
+              <span className="text-[#20c9b0]">together.</span>
+            </h1>
+
+            {/* Description */}
+            <p className="text-sm sm:text-base text-neutral-600 leading-relaxed max-w-[380px] font-normal">
+              Find collaborators, build tracks, and bring your next idea to life.
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-wrap items-center gap-3 pt-1">
+              <button
+                onClick={() => navigateTo('/signup')}
+                className="bg-[#20c9b0] hover:bg-[#1db8a4] active:scale-[0.98] text-white font-medium text-xs sm:text-sm px-5 py-2.5 rounded-full flex items-center space-x-1.5 transition-all shadow-sm cursor-pointer"
+              >
+                <span>Get started free</span>
+                <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
+              </button>
+
+              <a
+                href="#featured-artists"
+                className="border border-neutral-300 hover:border-neutral-800 bg-white hover:bg-neutral-50 text-neutral-800 font-medium text-xs sm:text-sm px-5 py-2.5 rounded-full transition-all cursor-pointer"
+              >
+                Explore the community
+              </a>
             </div>
-            <div className="border border-neutral-700 p-4 bg-[#1a1a1a]">
-              <span className="text-[#d7ff3b] font-bold block mb-1">03 / TIMESTAMP CRITIQUE</span>
-              <p className="text-neutral-400">Click on 00:08.5 to leave feedback tied to that specific acoustic note.</p>
+
+            {/* Avatars Stack & Community Text */}
+            <div className="flex items-center space-x-3 pt-2">
+              <div className="flex -space-x-1.5 overflow-hidden">
+                {communityAvatars.map((src, i) => (
+                  <img
+                    key={i}
+                    src={src}
+                    alt="Musician"
+                    className="inline-block h-7 w-7 rounded-full ring-2 ring-white object-cover"
+                  />
+                ))}
+              </div>
+              <p className="text-[11px] text-neutral-500 font-normal leading-snug">
+                Join a growing community <br />
+                of musicians, producers and creators.
+              </p>
             </div>
-            <div className="border border-neutral-700 p-4 bg-[#1a1a1a]">
-              <span className="text-[#d7ff3b] font-bold block mb-1">04 / TAKE HISTORY</span>
-              <p className="text-neutral-400">Take 01, Take 02, Take 03. Preserved forever without file overwrites.</p>
+
+          </div>
+
+          {/* Right Hero Column (Authentic Studio Photo) */}
+          <div className="lg:col-span-7">
+            <div className="relative rounded-2xl overflow-hidden bg-neutral-100 shadow-sm aspect-[16/10] w-full">
+              <img
+                src="/images/hero_studio.jpg"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1600&q=80';
+                }}
+                alt="Musicians collaborating in music recording studio"
+                className="w-full h-full object-cover"
+              />
             </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 3. THREE-COLUMN FEATURE STRIP                                             */}
+      {/* ========================================================================= */}
+      <section id="how-it-works" className="border-y border-[#eaebed] py-8 sm:py-9">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
+            
+            {/* Title on the left */}
+            <div className="lg:col-span-3">
+              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-neutral-950 leading-snug">
+                Everything you need <br className="hidden sm:inline" />
+                to create together.
+              </h2>
+            </div>
+
+            {/* 3 Feature Items */}
+            <div className="lg:col-span-9 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-4 lg:gap-6">
+              
+              {/* Feature 1: Find collaborators */}
+              <div className="flex items-center space-x-3.5">
+                <div className="w-10 h-10 rounded-xl bg-neutral-100 flex items-center justify-center flex-shrink-0">
+                  <Users className="w-4 h-4 text-neutral-700 stroke-[1.75]" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-neutral-900 leading-tight">Find collaborators</h3>
+                  <p className="text-xs text-neutral-500 mt-0.5 leading-snug">
+                    Connect with vocalists, producers, instrumentalists and more.
+                  </p>
+                </div>
+              </div>
+
+              {/* Feature 2: Share tracks */}
+              <div className="flex items-center space-x-3.5">
+                <div className="w-10 h-10 rounded-xl bg-neutral-100 flex items-center justify-center flex-shrink-0">
+                  <Music className="w-4 h-4 text-neutral-700 stroke-[1.75]" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-neutral-900 leading-tight">Share tracks</h3>
+                  <p className="text-xs text-neutral-500 mt-0.5 leading-snug">
+                    Upload ideas, get feedback, and collaborate in real time.
+                  </p>
+                </div>
+              </div>
+
+              {/* Feature 3: Build together */}
+              <div className="flex items-center space-x-3.5">
+                <div className="w-10 h-10 rounded-xl bg-neutral-100 flex items-center justify-center flex-shrink-0">
+                  <Layers className="w-4 h-4 text-neutral-700 stroke-[1.75]" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-neutral-900 leading-tight">Build together</h3>
+                  <p className="text-xs text-neutral-500 mt-0.5 leading-snug">
+                    Turn your ideas into finished tracks with the right people.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+
           </div>
         </div>
       </section>
 
-      {/* Auth Modal */}
-      {showAuthModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-none flex items-center justify-center p-4">
-          <div className="brutal-card bg-white max-w-md w-full p-6 border-2 border-black">
-            <div className="flex items-center justify-between border-b-2 border-black pb-3 mb-4">
-              <span className="font-mono text-xs font-bold uppercase tracking-wider text-neutral-600">
-                {authMode === 'login' ? '[AUTH] SIGN IN TO WORKSHOP' : '[AUTH] REGISTER NEW MUSICIAN'}
-              </span>
-              <button 
-                onClick={() => setShowAuthModal(false)}
-                className="font-mono text-sm font-bold hover:text-red-600"
-              >
-                ✕ CLOSE
-              </button>
-            </div>
-
-            {error && (
-              <div className="mb-4 p-2.5 bg-red-100 border-2 border-red-600 font-mono text-xs text-red-900 font-bold">
-                {error}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-4 font-mono text-xs">
-              {authMode === 'register' && (
-                <>
-                  <div>
-                    <label className="block font-bold mb-1">DISPLAY NAME</label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.displayName}
-                      onChange={e => setFormData({ ...formData, displayName: e.target.value })}
-                      placeholder="e.g. Maya Patel"
-                      className="brutal-input w-full"
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-bold mb-1">USERNAME</label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.username}
-                      onChange={e => setFormData({ ...formData, username: e.target.value })}
-                      placeholder="maya-vocals"
-                      className="brutal-input w-full"
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-bold mb-1">PRIMARY INSTRUMENT / ROLE</label>
-                    <input
-                      type="text"
-                      value={formData.primaryRole}
-                      onChange={e => setFormData({ ...formData, primaryRole: e.target.value })}
-                      placeholder="Lead Vocalist / Songwriter"
-                      className="brutal-input w-full"
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-bold mb-1">EMAIL</label>
-                    <input
-                      type="email"
-                      required
-                      value={formData.email}
-                      onChange={e => setFormData({ ...formData, email: e.target.value })}
-                      placeholder="maya@band.io"
-                      className="brutal-input w-full"
-                    />
-                  </div>
-                </>
-              )}
-
-              {authMode === 'login' && (
-                <div>
-                  <label className="block font-bold mb-1">USERNAME OR EMAIL</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.login}
-                    onChange={e => setFormData({ ...formData, login: e.target.value })}
-                    placeholder="vikash or vikash@musiccollab.io"
-                    className="brutal-input w-full"
-                  />
-                </div>
-              )}
-
-              <div>
-                <label className="block font-bold mb-1">PASSWORD</label>
-                <input
-                  type="password"
-                  required
-                  value={formData.password}
-                  onChange={e => setFormData({ ...formData, password: e.target.value })}
-                  placeholder="••••••••••••"
-                  className="brutal-input w-full"
-                />
-              </div>
-
+      {/* ========================================================================= */}
+      {/* 4. FEATURED MUSICIANS SECTION (Exact Cards from Screenshot)               */}
+      {/* ========================================================================= */}
+      <section id="featured-artists" className="max-w-[1240px] mx-auto px-4 sm:px-8 py-10 sm:py-14">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* Left Info Column */}
+          <div className="lg:col-span-3 space-y-2">
+            <span className="text-[10px] font-mono font-bold tracking-wider text-neutral-400 uppercase block">
+              FEATURED ARTISTS
+            </span>
+            <h2 className="text-xl sm:text-2xl font-bold text-neutral-950 tracking-tight leading-snug">
+              Creators on MusicCollab
+            </h2>
+            <p className="text-xs text-neutral-500 leading-relaxed pt-0.5 max-w-xs">
+              Explore independent artists, producers and bands who are collaborating on amazing music.
+            </p>
+            
+            <div className="pt-2">
               <button
-                type="submit"
-                disabled={loading}
-                className="brutal-btn brutal-btn-acid w-full py-3 text-sm font-bold shadow-brutal mt-2"
+                onClick={() => setSearchModalOpen(true)}
+                className="inline-flex items-center space-x-1 text-xs font-semibold text-[#20c9b0] hover:text-[#19a590] transition-colors cursor-pointer"
               >
-                {loading ? 'AUTHENTICATING...' : authMode === 'login' ? 'SIGN IN' : 'CREATE ACCOUNT'}
+                <span>Explore artists</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
-            </form>
+            </div>
+          </div>
 
-            <div className="mt-4 pt-4 border-t border-black text-center font-mono text-xs">
-              {authMode === 'login' ? (
-                <span>
-                  New here?{' '}
-                  <button 
-                    onClick={() => { setAuthMode('register'); setError(''); }}
-                    className="font-bold underline hover:text-neutral-600"
-                  >
-                    Register musician profile
-                  </button>
-                </span>
+          {/* Right 3 Photographic Cards */}
+          <div className="lg:col-span-9 grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {featuredArtists.map((artist, i) => (
+              <div
+                key={i}
+                onClick={() => navigateTo('/signup')}
+                className="group relative aspect-[16/10] sm:aspect-[4/3] rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer bg-neutral-900"
+              >
+                {/* Photo */}
+                <img
+                  src={artist.image}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = artist.fallbackImage;
+                  }}
+                  alt={artist.name}
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+
+                {/* Dark gradient overlay at bottom */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+
+                {/* Bottom details & arrow */}
+                <div className="absolute bottom-0 inset-x-0 p-3.5 flex items-end justify-between">
+                  <div>
+                    <h4 className="text-sm font-bold text-white leading-tight">
+                      {artist.name}
+                    </h4>
+                    <p className="text-[11px] text-neutral-300 leading-tight mt-0.5 font-normal">
+                      {artist.role}
+                    </p>
+                  </div>
+
+                  {/* Circular translucent arrow button */}
+                  <div className="w-7 h-7 rounded-full bg-white/20 backdrop-blur-sm group-hover:bg-[#20c9b0] group-hover:text-black text-white flex items-center justify-center transition-all flex-shrink-0">
+                    <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 5. MINIMAL CLEAN FOOTER                                                    */}
+      {/* ========================================================================= */}
+      <footer className="border-t border-[#eaebed] py-8 bg-white">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-neutral-400 space-y-3 sm:space-y-0">
+          <div className="flex items-center space-x-2">
+            <span className="font-semibold text-neutral-700">MusicCollab</span>
+            <span>•</span>
+            <span>Make music together</span>
+          </div>
+          <div>
+            © 2026 MusicCollab. All rights reserved.
+          </div>
+        </div>
+      </footer>
+
+      {/* ========================================================================= */}
+      {/* 6. DISCOVER SEARCH MODAL                                                  */}
+      {/* ========================================================================= */}
+      {searchModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-start justify-center pt-24 px-4">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-5 shadow-2xl border border-neutral-200 space-y-4">
+            
+            <div className="flex items-center justify-between border-b border-neutral-100 pb-2.5">
+              <span className="text-sm font-bold text-neutral-900">Discover Creators & Stems</span>
+              <button
+                onClick={() => setSearchModalOpen(false)}
+                className="text-neutral-400 hover:text-black font-bold p-1"
+              >
+                ✕
+              </button>
+            </div>
+
+            <input
+              type="text"
+              autoFocus
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by name, instrument, or genre..."
+              className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs sm:text-sm outline-none focus:border-[#20c9b0] focus:bg-white transition-all"
+            />
+
+            <div className="max-h-60 overflow-y-auto space-y-1.5">
+              {filteredArtists.length === 0 ? (
+                <p className="text-xs text-neutral-400 text-center py-4">No artists found</p>
               ) : (
-                <span>
-                  Already registered?{' '}
-                  <button 
-                    onClick={() => { setAuthMode('login'); setError(''); }}
-                    className="font-bold underline hover:text-neutral-600"
+                filteredArtists.map((artist, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      setSearchModalOpen(false);
+                      navigateTo('/signup');
+                    }}
+                    className="flex items-center justify-between p-2.5 rounded-xl hover:bg-neutral-50 cursor-pointer transition-all"
                   >
-                    Sign in
-                  </button>
-                </span>
+                    <div>
+                      <p className="text-xs font-bold text-neutral-900">{artist.name}</p>
+                      <p className="text-[11px] text-neutral-500">{artist.role} • {artist.genre}</p>
+                    </div>
+                    <span className="text-xs font-semibold text-[#20c9b0]">Connect ➔</span>
+                  </div>
+                ))
               )}
             </div>
 
-            {/* Quick Demo Credentials Reminder */}
-            <div className="mt-4 p-2 bg-[#ede8dc] border border-black text-[11px] font-mono">
-              <span className="font-bold block text-black">TEST DEMO USERS (password: Password123!):</span>
-              <span className="text-neutral-700">vikash, maya-vocals, sid-guitar, arjun-drums</span>
-            </div>
           </div>
         </div>
       )}

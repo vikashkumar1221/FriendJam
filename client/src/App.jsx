@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AuthPage } from './components/AuthPage';
+import { LandingPage } from './components/LandingPage';
 import { Sidebar } from './components/Sidebar';
 import { TopNavbar } from './components/TopNavbar';
 import { StudioDashboard } from './components/StudioDashboard';
@@ -27,6 +28,25 @@ const MainApp = () => {
   const [activeNav, setActiveNav] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Public vs Auth URL routing
+  const [currentRoute, setCurrentRoute] = useState(() => {
+    return window.location.pathname || '/';
+  });
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentRoute(window.location.pathname || '/');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const navigate = (path) => {
+    window.history.pushState({}, '', path);
+    setCurrentRoute(path);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
   
   // Messaging state
   const [isMessagesOpen, setIsMessagesOpen] = useState(false);
@@ -67,15 +87,52 @@ const MainApp = () => {
       <div className="min-h-screen bg-[#0d0e11] flex items-center justify-center text-white font-mono">
         <div className="flex flex-col items-center space-y-3">
           <Disc3 className="w-8 h-8 text-[#20c9b0] animate-spin" />
-          <span className="text-xs tracking-wider text-neutral-400">CONNECTING TO MUSICCOLLAB STUDIO...</span>
+          <span className="text-xs tracking-wider text-neutral-400">CONNECTING TO FRIENDJAM STUDIO...</span>
         </div>
       </div>
     );
   }
 
-  // If not logged in, show LANDR-style Split-Screen Auth Page
+  // If not logged in: Separate Public Landing Page at root (/), or AuthPage for /login and /signup
   if (!user) {
-    return <AuthPage />;
+    if (currentRoute === '/signup' || currentRoute === '/register') {
+      return (
+        <AuthPage 
+          initialMode="register" 
+          onBackToHome={() => navigate('/')} 
+          onNavigate={navigate} 
+        />
+      );
+    }
+    if (currentRoute === '/login') {
+      return (
+        <AuthPage 
+          initialMode="login" 
+          onBackToHome={() => navigate('/')} 
+          onNavigate={navigate} 
+        />
+      );
+    }
+    // Default initial public landing page route
+    return <LandingPage onNavigate={navigate} />;
+  }
+
+  // Optional preview of public landing page for authenticated user
+  if (currentRoute === '/landing' || currentRoute === '/home') {
+    return (
+      <div className="relative">
+        <div className="bg-neutral-900 text-white text-xs py-2 px-6 flex items-center justify-between sticky top-0 z-50 border-b border-neutral-800">
+          <span className="font-mono text-neutral-300">Public Landing Page Preview (Logged in as @{user.username})</span>
+          <button 
+            onClick={() => navigate('/')}
+            className="bg-[#20c9b0] hover:bg-[#1bb59e] text-black font-bold px-3 py-1 rounded-full text-xs transition-colors cursor-pointer"
+          >
+            Back to Studio Workspace
+          </button>
+        </div>
+        <LandingPage onNavigate={navigate} />
+      </div>
+    );
   }
 
   const handleCreateRepo = async (e) => {

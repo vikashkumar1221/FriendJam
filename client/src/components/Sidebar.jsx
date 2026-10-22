@@ -18,7 +18,8 @@ import {
   Repeat,
   Menu,
   X,
-  Volume2
+  Volume2,
+  Globe
 } from 'lucide-react';
 
 export const Sidebar = ({ 
@@ -125,7 +126,7 @@ export const Sidebar = ({
             <span className="w-3 h-3 rounded-full bg-[#ff5f56] inline-block shadow-sm"></span>
             <span className="w-3 h-3 rounded-full bg-[#ffbd2e] inline-block shadow-sm"></span>
             <span className="w-3 h-3 rounded-full bg-[#27c93f] inline-block shadow-sm"></span>
-            <span className="ml-2 text-[10px] font-mono text-neutral-500 tracking-wider">MUSICCOLLAB</span>
+            <span className="ml-2 text-[10px] font-mono text-neutral-500 tracking-wider">FRIENDJAM</span>
           </div>
 
           <div className="flex items-center justify-between">
@@ -140,7 +141,7 @@ export const Sidebar = ({
               </div>
               <div>
                 <span className="font-bold text-sm tracking-tight text-white block leading-none font-sans">
-                  MusicCollab
+                  FriendJam
                 </span>
                 <span className="text-[9px] font-mono tracking-wider text-[#e5a83b] uppercase block mt-0.5 font-bold">
                   STUDIO WORKSPACE
@@ -242,6 +243,17 @@ export const Sidebar = ({
             >
               <HelpCircle className={`w-4 h-4 ${activeNav === 'help' ? 'text-[#e5a83b]' : 'text-[#737882]'}`} />
               <span>Help & Support</span>
+            </button>
+            <button
+              onClick={() => {
+                window.history.pushState({}, '', '/landing');
+                window.dispatchEvent(new PopStateEvent('popstate'));
+                if (onClose) onClose();
+              }}
+              className="w-full flex items-center space-x-3 px-3 py-2 rounded-xl font-medium transition-all text-[#9ba0a9] hover:bg-[#2d3034] hover:text-white cursor-pointer"
+            >
+              <Globe className="w-4 h-4 text-[#737882]" />
+              <span>Public Landing Page</span>
             </button>
           </div>
 
